@@ -1,0 +1,5 @@
+index:
+  name: Real-Time Airfare Price Index
+  base_value: 100
+  methodology: Laspeyres
+  update_frequency_hours: 6

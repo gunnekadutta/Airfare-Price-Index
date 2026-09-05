@@ -1,0 +1,15 @@
+fastapi
+uvicorn[standard]
+pandas
+numpy
+sqlalchemy
+psycopg2-binary
+pydantic
+python-dotenv
+requests
+beautifulsoup4
+playwright
+pyyaml
+apscheduler
+scikit-learn
+statsmodels

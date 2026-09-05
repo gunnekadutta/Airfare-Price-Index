@@ -1,0 +1,6 @@
+origin,destination,airline,fare
+DEL,BOM,IndiGo,5500
+DEL,BOM,Air India,6100
+DEL,BLR,IndiGo,6200
+DEL,BLR,Air India,6800
+DEL,HYD,IndiGo,4800

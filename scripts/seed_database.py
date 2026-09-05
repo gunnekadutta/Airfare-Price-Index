@@ -1,0 +1,1 @@
+print("Database seeding placeholder.")
