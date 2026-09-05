@@ -11,19 +11,19 @@ The objective is to convert continuously collected airfare observations into a m
 ## Pipeline
 
 Raw Fare Data
-    ?
+    ->
 Cleaning
-    ?
+    ->
 Normalization
-    ?
+    ->
 Weighted Route Basket
-    ?
+    ->
 Laspeyres Index
-    ?
+    ->
 Analytics
-    ?
+    ->
 FastAPI
-    ?
+    ->
 Dashboard
 
 ## Core Features
@@ -72,7 +72,7 @@ API documentation:
 
 The core index uses a Laspeyres-style formulation:
 
-    Index = S(weight × current_price / base_price) × 100
+    Index = S(weight Ã— current_price / base_price) Ã— 100
 
 Route weights initially represent passenger traffic share.
 
