@@ -1,0 +1,121 @@
+FIRST TASK — AUDIT THE EXISTING AIR FARE INDEX APPLICATION.
+
+IMPORTANT:
+Do NOT redesign anything.
+Do NOT modify the UI.
+Do NOT add new pages.
+Do NOT delete anything.
+Do NOT rewrite the application.
+
+I have imported an existing coded version of my Air Fare Index project from GitHub.
+
+Before making any changes, inspect the entire existing project and understand:
+
+1. Current framework and build setup
+2. Existing page/route structure
+3. Existing reusable components
+4. Existing styling system
+5. Existing navigation
+6. Existing data models/types
+7. Existing mock/static data
+8. Existing charts
+9. Existing selectors/forms
+10. Existing dependencies
+11. Existing backend/API integration, if any
+12. Current build/lint/test setup
+
+Identify the existing screens corresponding to:
+
+- Home / Landing
+- Overview & Indices
+- Route Analytics
+- Fare Forecast
+- Alerts & Surges
+- Methodology & Data
+
+Also identify whether any duplicate screens/components already exist, especially duplicate Fare Forecast pages.
+
+IMPORTANT PRODUCT CONTEXT:
+
+This is an India domestic Air Fare Index application.
+
+The MVP supports exactly these 25 routes:
+
+DEL-BOM
+DEL-BLR
+DEL-HYD
+DEL-CCU
+DEL-MAA
+DEL-AMD
+DEL-PNQ
+DEL-GOI
+DEL-COK
+DEL-GAU
+BOM-BLR
+BOM-HYD
+BOM-MAA
+BOM-CCU
+BOM-AMD
+BOM-GOI
+BLR-HYD
+BLR-MAA
+BLR-CCU
+BLR-GOI
+BLR-COK
+HYD-MAA
+HYD-CCU
+CCU-GAU
+MAA-COK
+
+The observation schema will contain:
+
+observation_id
+collected_at
+travel_date
+origin
+destination
+route
+airline
+flight_number
+departure_time
+fare_displayed
+currency
+fare_type
+source
+is_round_trip
+taxes
+total_fare
+
+MVP methodology:
+
+5 observations per route
+→ median route price
+→ weighted Laspeyres index
+
+MVP route weighting:
+25 routes
+equal weighting
+1/25 = 4.0% per route
+
+IMPORTANT:
+Do not assume passenger-traffic weighting is implemented.
+Do not assume ML forecasting is implemented.
+Do not assume GDS/PNR/seat-factor/capacity data exists.
+
+The final product must not invent aviation intelligence.
+
+For now, ONLY AUDIT the codebase.
+
+At the end, give me a concise report containing:
+
+- Current framework
+- Main app entry point
+- Current routes/pages
+- Important reusable components
+- Current data/mock-data files
+- Current styling approach
+- Duplicate pages/components found
+- Potential risks before modification
+- Recommended order for implementing the improvements
+
+DO NOT CHANGE CODE IN THIS STEP.
