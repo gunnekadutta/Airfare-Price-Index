@@ -1,0 +1,386 @@
+PASS 1 — GLOBAL UI REFINEMENT ONLY
+
+Now improve the visual quality of the EXISTING Air Fare Index application.
+
+IMPORTANT:
+- Do NOT add new pages yet.
+- Do NOT change the application's data architecture yet.
+- Do NOT implement backend/API functionality yet.
+- Do NOT remove existing major content.
+- Do NOT redesign it into a different product.
+- Do NOT change the overall page structure.
+- Do NOT create duplicate pages.
+- Do NOT replace working components unnecessarily.
+
+The goal of this pass is ONLY:
+
+MAKE THE CURRENT APPLICATION LOOK MORE REFINED, ELEGANT, PREMIUM AND PROFESSIONAL.
+
+Use the current Air Fare Index identity and existing screens as the foundation.
+
+==================================================
+VISUAL DIRECTION
+==================================================
+
+The product should feel like a premium aviation intelligence / financial analytics platform.
+
+Think:
+
+- sophisticated
+- restrained
+- elegant
+- clean
+- precise
+- data-focused
+- trustworthy
+- modern
+
+Avoid:
+- flashy gradients
+- excessive animation
+- excessive colors
+- giant decorative elements
+- generic SaaS-template styling
+- excessive shadows
+- unnecessary glassmorphism
+
+==================================================
+BACKGROUND
+==================================================
+
+Keep the very subtle light blue/grey grid background.
+
+Refine it so:
+- grid lines are thin and low contrast
+- grid does not compete with content
+- content remains easy to read
+- the background feels intentional and technical
+
+==================================================
+TYPOGRAPHY
+==================================================
+
+Improve the hierarchy throughout the application.
+
+Page titles:
+- strong dark navy
+- large but not oversized
+- consistent sizing between pages
+
+Section headings:
+- clear and moderately bold
+
+Labels:
+- small
+- uppercase where appropriate
+- muted blue-grey
+
+Primary numbers:
+- prominent
+- dark navy
+- strong weight
+- consistent formatting
+
+Supporting text:
+- muted slate/blue-grey
+- comfortable line height
+
+Make typography consistent across every existing screen.
+
+==================================================
+CARDS
+==================================================
+
+Refine every existing card.
+
+Use:
+- white background
+- subtle 1px border
+- very soft shadow
+- consistent rounded corners
+- consistent padding
+- clean internal alignment
+
+Do NOT make cards excessively rounded or excessively shadowed.
+
+Cards should feel like polished analytical panels.
+
+Create a consistent hierarchy:
+
+small label
+↓
+large primary value
+↓
+supporting context
+
+==================================================
+SPACING & ALIGNMENT
+==================================================
+
+This is VERY important.
+
+Fix:
+- inconsistent padding
+- uneven gaps
+- awkward whitespace
+- misaligned card edges
+- inconsistent section spacing
+- inconsistent margins
+
+Use a consistent spacing system.
+
+Make columns line up cleanly.
+
+The page should feel designed on a precise grid.
+
+==================================================
+BUTTONS
+==================================================
+
+Refine existing buttons.
+
+Primary buttons:
+- deep aviation green
+- white text
+- subtle hover state
+- polished rounded corners
+
+Secondary buttons:
+- white/light background
+- subtle border
+- dark navy text
+
+Avoid oversized buttons.
+
+Buttons should feel premium and purposeful.
+
+==================================================
+SELECTORS / INPUTS
+==================================================
+
+Refine existing:
+- route selectors
+- search box
+- dropdowns
+- date inputs
+- controls
+
+They should have:
+- clean borders
+- comfortable height
+- consistent radius
+- clear focus state
+- readable text
+
+==================================================
+SIDEBAR
+==================================================
+
+Keep the existing sidebar.
+
+Refine:
+- logo/brand alignment
+- navigation spacing
+- active navigation state
+- typography
+- search field
+- alert badge
+- monitored sectors card
+- back-to-home link
+
+The active page should be immediately obvious without looking aggressive.
+
+Use the deep green accent subtly.
+
+==================================================
+FOOTER
+==================================================
+
+Keep the existing footer concept.
+
+Make it:
+- subtle
+- smaller
+- aligned
+- visually secondary
+
+It should never compete with the main content.
+
+==================================================
+CHARTS
+==================================================
+
+Do NOT replace existing charts.
+
+Refine their presentation:
+- cleaner axes
+- subtle grid lines
+- readable labels
+- consistent typography
+- restrained colors
+- proper spacing
+- clear legends
+
+Charts should look like professional analytics visualizations rather than decorative graphics.
+
+==================================================
+TABLES
+==================================================
+
+Refine existing data tables.
+
+Improve:
+- header hierarchy
+- row spacing
+- borders
+- alignment
+- numeric formatting
+- source labels
+- readability
+
+Keep tables dense enough for analytics but not cramped.
+
+On smaller screens, allow horizontal scrolling rather than breaking the layout.
+
+==================================================
+HOME SCREEN
+==================================================
+
+Keep the existing Home / Landing page structure.
+
+Refine:
+- Air Fare Index title
+- subtitle
+- description
+- CTAs
+- aviation/network visual
+- feature highlights
+- summary cards
+
+The page should feel like a polished product landing page rather than a prototype.
+
+Do NOT add new functionality in this pass.
+
+==================================================
+OVERVIEW & INDICES
+==================================================
+
+Keep the existing dashboard structure.
+
+Refine:
+- metric cards
+- AFI number presentation
+- average fare
+- monitored corridor card
+- chart
+- spacing
+- hierarchy
+
+Do NOT change the existing calculations in this pass.
+
+Do NOT invent new metrics.
+
+==================================================
+ROUTE ANALYTICS
+==================================================
+
+Keep the existing structure.
+
+Refine:
+- route selector
+- metric cards
+- observation table
+- spacing
+- typography
+- visual hierarchy
+
+Do NOT change the underlying route logic yet.
+
+Do NOT add the new 25-route functionality yet.
+
+==================================================
+FARE FORECAST
+==================================================
+
+Keep the existing Fare Forecast screen.
+
+Only refine its visual appearance in this pass.
+
+Do NOT create another forecast page.
+
+Do NOT implement forecasting logic yet.
+
+Do NOT add new metrics.
+
+==================================================
+ALERTS & SURGES
+==================================================
+
+Keep the existing page structure for now.
+
+Only improve its visual quality.
+
+Do NOT implement the new alert logic yet.
+
+Do NOT add unsupported analytics.
+
+==================================================
+METHODOLOGY & DATA
+==================================================
+
+Keep the existing page.
+
+Refine:
+- methodology card
+- formula presentation
+- typography
+- spacing
+- information hierarchy
+
+Do NOT rewrite the methodology content yet.
+
+==================================================
+RESPONSIVENESS
+==================================================
+
+Improve responsive behavior without changing the desktop design.
+
+Ensure:
+- no accidental horizontal page overflow
+- cards reflow appropriately
+- tables scroll when needed
+- charts resize
+- sidebar behaves correctly
+- typography remains readable
+
+Desktop analytics layout remains the priority.
+
+==================================================
+IMPLEMENTATION RULES
+==================================================
+
+Reuse existing components and styles where possible.
+
+Do not introduce unnecessary dependencies.
+
+Do not rewrite the application from scratch.
+
+Do not modify backend logic.
+
+Do not create placeholder functionality just to make the UI appear complete.
+
+After making the changes:
+
+1. Run the project's existing build command.
+2. Run lint/type checks if available.
+3. Fix any errors caused by this pass.
+4. Confirm that all existing pages still load.
+5. Confirm that existing navigation still works.
+
+FINAL GOAL:
+
+The application should now look noticeably more refined, elegant and premium while still clearly being the same Air Fare Index application.
+
+This pass is VISUAL ONLY.
+
+Do not proceed to adding new pages or major functionality yet.
