@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { FareDisplay } from './FareDisplay';
 
 export type PageView = 'welcome' | 'overview' | 'route-analytics' | 'fare-forecast' | 'alerts' | 'methodology';
@@ -152,16 +152,16 @@ function RouteFareBreakdown({
   }
 
   return (
-    <details className="relative">
-      <summary className="list-none cursor-pointer font-semibold text-slate-900">
+    <div className="relative inline-block group">
+      <span className="cursor-pointer font-semibold text-slate-900">
         {formatFare(fareDisplayed, currency)} <span className="text-[10px] font-normal text-slate-500">+ taxes ⓘ</span>
-      </summary>
-      <div className="absolute left-0 top-6 z-20 w-56 rounded-lg bg-slate-900 p-3 text-[10px] text-white shadow-xl">
+      </span>
+      <div className="absolute left-0 top-6 z-20 w-56 rounded-lg bg-slate-900 p-3 text-[10px] text-white shadow-xl hidden group-hover:block">
         <div className="flex justify-between"><span className="text-slate-400">Fare Displayed</span><span>{formatFare(fareDisplayed, currency)}</span></div>
         <div className="flex justify-between mt-1"><span className="text-slate-400">Taxes &amp; Fees</span><span>{formatFare(taxes, currency)}</span></div>
         <div className="flex justify-between mt-2 border-t border-slate-700 pt-2 font-semibold"><span>Total Fare</span><span>{formatFare(totalFare, currency)}</span></div>
       </div>
-    </details>
+    </div>
   );
 }
 
