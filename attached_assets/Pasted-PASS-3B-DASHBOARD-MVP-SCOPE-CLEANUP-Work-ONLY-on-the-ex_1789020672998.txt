@@ -1,0 +1,104 @@
+PASS 3B — DASHBOARD MVP SCOPE CLEANUP
+
+Work ONLY on the existing Overview & Indices / Dashboard screen and its shared sidebar/footer elements.
+
+Do not modify any other page or backend logic.
+
+Make these corrections:
+
+1. MONITORED SECTORS
+
+The current sidebar says:
+
+"MONITORED SECTORS"
+"120 Active"
+
+This is incorrect for our current MVP.
+
+Change it to:
+
+"SUPPORTED MVP ROUTES"
+"25 Supported"
+
+Keep the representative route chips, but use only routes from our official 25-route MVP list.
+
+Do not say 120+ active, 120+ monitored, or 120+ supported anywhere on this dashboard.
+
+2. FOOTER
+
+Remove unsupported wording such as:
+
+"GDS Historical Curves"
+
+The footer must not imply that GDS historical data is currently being ingested.
+
+Use concise neutral wording such as:
+
+"Air Fare Index • Domestic Aviation Fare Intelligence"
+
+and:
+
+"Live Demo • MVP Observation Dataset"
+
+Do not mention GDS, PNRs, seat factors, passenger traffic, or yield dynamics unless actually implemented.
+
+3. ROUTE SNAPSHOT
+
+Keep the existing Route Snapshot table.
+
+For routes where an observed fare is not currently available, keep:
+
+"Not available"
+
+but make the styling intentionally subtle rather than making it look like an error.
+
+Do NOT invent fares.
+
+Keep:
+- route
+- observed fare
+- observations
+- weight
+
+The route weight should remain:
+
+4.0%
+
+for every MVP route.
+
+4. LIVE DEMO LABELING
+
+Keep:
+
+"Live Demo Active"
+
+and:
+
+"Current MVP observation set"
+
+These are correct.
+
+Do not call the demo a production real-time feed.
+
+5. GENERAL POLISH
+
+Keep the current dashboard layout and visual design.
+
+Only make small refinements:
+- consistent spacing
+- aligned card contents
+- subtle borders
+- clean typography
+- restrained green accents
+- no unnecessary visual elements
+
+Do NOT redesign the dashboard.
+
+Do NOT create another dashboard.
+
+Do NOT modify Home, Route Analytics, Fare Forecast, Alerts & Surges, or Methodology & Data.
+
+Afterward:
+- run the frontend build
+- verify Overview & Indices renders
+- verify navigation still works

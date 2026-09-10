@@ -1,0 +1,111 @@
+PASS 1 — REFINE THE EXISTING AIR FARE INDEX UI
+
+The frontend is now loading correctly in Preview.
+
+Do NOT rebuild the application.
+Do NOT create new pages yet.
+Do NOT change the existing page structure or functionality in this pass.
+
+Your task is to refine the EXISTING frontend so it feels like a polished, elegant aviation intelligence product rather than a rough prototype.
+
+Use the current UI and existing Air Fare Index visual language as the foundation.
+
+GLOBAL VISUAL DIRECTION:
+
+- Keep the existing Air Fare Index identity.
+- Keep the dark navy/ink typography, muted blue-gray secondary text, white cards, pale grid background, and deep green accent.
+- Make the interface feel refined, premium, calm, analytical, and trustworthy.
+- Avoid flashy dashboards, gradients, excessive shadows, glassmorphism, or generic SaaS styling.
+- Preserve the aviation/intelligence aesthetic.
+- Use generous whitespace and stronger visual hierarchy.
+- Make cards and controls feel intentional and balanced.
+- Use consistent border radii, borders, spacing, typography, and alignment throughout.
+- Improve typography hierarchy so page titles, subtitles, labels, values, and supporting text are clearly differentiated.
+- Reduce visual clutter wherever elements currently feel cramped.
+- Keep the subtle engineering/grid background.
+- Keep the existing aviation network visual on Home.
+- Keep the existing sidebar/navigation concepts.
+
+HEADER / BRAND:
+
+Refine the Air Fare Index logo/brand area so it feels clean and compact.
+
+Use:
+AIR FARE INDEX
+AVIATION INTELLIGENCE
+
+Keep the smaller supporting line where appropriate:
+National Civil Aviation Telemetry • India
+
+Do not introduce a new logo or brand identity.
+
+NAVIGATION:
+
+Keep these primary sections:
+
+- Overview & Indices
+- Route Analytics
+- Fare Forecast
+- Alerts & Surges
+- Methodology & Data
+
+Make active navigation states visually clear but elegant.
+
+HOME:
+
+Keep the existing Home content and main elements.
+
+Refine:
+- title typography
+- subtitle typography
+- descriptive copy spacing
+- CTA buttons
+- feature blocks
+- aviation network card
+- bottom metric cards
+
+The Home page should feel like the polished entry point to the product.
+
+SIDEBAR:
+
+Keep:
+- search field
+- navigation
+- Back to Home
+- Monitored Sectors
+
+Improve spacing and alignment.
+
+Do not remove the monitored-sector concept.
+
+IMPORTANT CONTENT RULE:
+
+Do not invent new analytics or claims.
+
+Do not introduce:
+- GDS yield metrics
+- PNR counts
+- seat factor
+- capacity analysis
+- passenger demand
+- confidence scores
+- ML accuracy
+- unsupported operational intelligence
+
+Use the existing data/content for now.
+
+RESPONSIVE BEHAVIOR:
+
+Make sure the refinement does not break the current desktop layout or cause horizontal overflow.
+
+Do not modify backend code.
+
+Do not add dependencies unless absolutely necessary.
+
+After making the changes:
+1. Run the frontend build.
+2. Fix any TypeScript/build errors.
+3. Verify Preview loads correctly.
+4. Keep the changes limited to this visual refinement pass.
+
+Do NOT create additional pages in this pass.

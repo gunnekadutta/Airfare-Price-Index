@@ -1,0 +1,99 @@
+PASS 0.5 — RESTORE THE EXISTING FRONTEND FROM origin/dev
+
+We have confirmed that the existing Air Fare Index frontend is on:
+
+origin/dev
+commit: acd5b9c73ee6139309fdf062dbb1d9650a8757c3
+
+It is located in:
+
+frontend/
+
+The current Replit workspace is on main and contains the backend only.
+
+IMPORTANT:
+DO NOT rebuild the frontend.
+DO NOT create a new React application.
+DO NOT redesign anything.
+DO NOT modify the existing frontend code.
+DO NOT delete the backend.
+DO NOT reset the workspace.
+DO NOT switch the entire project away from the current backend branch.
+
+Instead, bring the EXISTING frontend from origin/dev into the current workspace while preserving the current backend.
+
+Specifically:
+
+1. Fetch/update the remote branch information if necessary.
+
+2. Copy/restore the existing frontend directory from:
+   origin/dev
+   path: frontend/
+
+into the current workspace.
+
+3. Also restore the frontend configuration files that are required for the existing Vite/React frontend to run, but ONLY if they are part of the frontend implementation on origin/dev.
+
+4. Preserve the existing FastAPI backend and all current backend files.
+
+5. Do NOT merge unrelated changes from origin/dev into main.
+
+6. Do NOT overwrite backend files.
+
+7. Do NOT modify the contents of the frontend except what is absolutely necessary to make the existing frontend runnable in this workspace.
+
+After restoring it:
+
+- inspect frontend/package.json
+- install the frontend dependencies if required
+- identify the correct Vite development command
+- configure the Replit Preview to run the existing frontend
+- make sure the frontend can start successfully
+
+The expected frontend stack is:
+
+React 19
+TypeScript
+Vite
+Tailwind CSS
+PostCSS
+ESLint
+
+The existing frontend should contain:
+
+- Home / Welcome
+- Overview & Indices
+- Route Analytics
+- Fare Forecast
+- Alerts & Surges
+- Methodology & Data
+- Sidebar
+- Header/navigation
+- Route selector
+- Metric cards
+- Tables
+- Charts
+- Aviation network visual
+- FareDisplay component
+
+IMPORTANT:
+Do not improve the UI yet.
+
+The ONLY goal of this task is:
+
+EXISTING BACKEND
++
+EXISTING FRONTEND FROM origin/dev
++
+WORKING REPLIT PREVIEW
+
+After completing this, report:
+
+1. Whether frontend/ was successfully restored
+2. The frontend start/dev command
+3. Whether dependencies were installed
+4. Whether Preview is working
+5. Any errors encountered
+6. The current frontend entry point
+
+Do not perform any visual redesign or feature changes yet.

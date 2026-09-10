@@ -1,13 +1,179 @@
-﻿import React, { useState } from 'react';
+﻿import { useState } from 'react';
 import { FareDisplay } from './FareDisplay';
 
 export type PageView = 'welcome' | 'overview' | 'route-analytics' | 'fare-forecast' | 'alerts' | 'methodology';
 
+const MVP_ROUTES = [
+  'DEL-BOM', 'DEL-BLR', 'DEL-HYD', 'DEL-CCU', 'DEL-MAA',
+  'DEL-AMD', 'DEL-PNQ', 'DEL-GOI', 'DEL-COK', 'DEL-GAU',
+  'BOM-BLR', 'BOM-HYD', 'BOM-MAA', 'BOM-CCU', 'BOM-AMD',
+  'BOM-GOI', 'BLR-HYD', 'BLR-MAA', 'BLR-CCU', 'BLR-GOI',
+  'BLR-COK', 'HYD-MAA', 'HYD-CCU', 'CCU-GAU', 'MAA-COK',
+] as const;
+
+type MvpRoute = typeof MVP_ROUTES[number];
+
+type RouteObservation = {
+  observation_id: string;
+  collected_at: string | null;
+  travel_date: string | null;
+  origin: string;
+  destination: string;
+  route: MvpRoute;
+  airline: string | null;
+  flight_number: string | null;
+  departure_time: string | null;
+  fare_displayed: number | null;
+  currency: string;
+  fare_type: string | null;
+  source: string | null;
+  is_round_trip: boolean | null;
+  taxes: number | null;
+  total_fare: number | null;
+};
+
+const ROUTE_MEDIAN_FARES: Partial<Record<MvpRoute, number>> = {
+  'DEL-BLR': 6120,
+  'DEL-BOM': 5800,
+};
+
+const DEL_BLR_OBSERVATIONS: RouteObservation[] = [
+  {
+    observation_id: 'OBS-10921',
+    collected_at: '15 Nov 08:12',
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BLR',
+    route: 'DEL-BLR',
+    airline: 'Akasa Air',
+    flight_number: 'QP-1342',
+    departure_time: '07:28',
+    fare_displayed: 5100,
+    currency: 'INR',
+    fare_type: null,
+    source: 'Direct API',
+    is_round_trip: false,
+    taxes: 650,
+    total_fare: 5750,
+  },
+  {
+    observation_id: 'OBS-10922',
+    collected_at: '15 Nov 08:15',
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BLR',
+    route: 'DEL-BLR',
+    airline: 'IndiGo',
+    flight_number: '6E-2131',
+    departure_time: '09:45',
+    fare_displayed: 5250,
+    currency: 'INR',
+    fare_type: null,
+    source: 'GDS Aggregator',
+    is_round_trip: false,
+    taxes: 698,
+    total_fare: 5948,
+  },
+  {
+    observation_id: 'OBS-10923',
+    collected_at: '15 Nov 08:20',
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BLR',
+    route: 'DEL-BLR',
+    airline: 'IndiGo',
+    flight_number: '6E-5012',
+    departure_time: '14:18',
+    fare_displayed: 5380,
+    currency: 'INR',
+    fare_type: null,
+    source: 'GDS Aggregator',
+    is_round_trip: false,
+    taxes: 740,
+    total_fare: 6120,
+  },
+  {
+    observation_id: 'OBS-10924',
+    collected_at: null,
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BLR',
+    route: 'DEL-BLR',
+    airline: 'IndiGo',
+    flight_number: null,
+    departure_time: null,
+    fare_displayed: 6200,
+    currency: 'INR',
+    fare_type: null,
+    source: null,
+    is_round_trip: null,
+    taxes: null,
+    total_fare: null,
+  },
+  {
+    observation_id: 'OBS-10925',
+    collected_at: null,
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BLR',
+    route: 'DEL-BLR',
+    airline: 'Air India',
+    flight_number: null,
+    departure_time: null,
+    fare_displayed: 6800,
+    currency: 'INR',
+    fare_type: null,
+    source: null,
+    is_round_trip: null,
+    taxes: null,
+    total_fare: null,
+  },
+];
+
+function formatFare(value: number | null, currency = 'INR') {
+  if (value === null) return 'Not available';
+  if (currency === 'INR') return `₹${value.toLocaleString('en-IN')}`;
+  return `${currency} ${value.toLocaleString('en-IN')}`;
+}
+
+function RouteFareBreakdown({
+  fareDisplayed,
+  taxes,
+  totalFare,
+  currency,
+}: {
+  fareDisplayed: number | null;
+  taxes: number | null;
+  totalFare: number | null;
+  currency: string;
+}) {
+  if (fareDisplayed === null) {
+    return <span className="text-[11px] italic text-slate-400/80">Not available</span>;
+  }
+
+  return (
+    <details className="relative">
+      <summary className="list-none cursor-pointer font-semibold text-slate-900">
+        {formatFare(fareDisplayed, currency)} <span className="text-[10px] font-normal text-slate-500">+ taxes ⓘ</span>
+      </summary>
+      <div className="absolute left-0 top-6 z-20 w-56 rounded-lg bg-slate-900 p-3 text-[10px] text-white shadow-xl">
+        <div className="flex justify-between"><span className="text-slate-400">Fare Displayed</span><span>{formatFare(fareDisplayed, currency)}</span></div>
+        <div className="flex justify-between mt-1"><span className="text-slate-400">Taxes &amp; Fees</span><span>{formatFare(taxes, currency)}</span></div>
+        <div className="flex justify-between mt-2 border-t border-slate-700 pt-2 font-semibold"><span>Total Fare</span><span>{formatFare(totalFare, currency)}</span></div>
+      </div>
+    </details>
+  );
+}
+
 export function App() {
   const [activeTab, setActiveTab] = useState<PageView>('welcome');
-  const [selectedRoute, setSelectedRoute] = useState<string>('DEL-BLR');
+  const [selectedRoute, setSelectedRoute] = useState<MvpRoute>('DEL-BLR');
 
   const isLanding = activeTab === 'welcome';
+  const selectedRouteIndex = MVP_ROUTES.indexOf(selectedRoute) + 1;
+  const selectedRouteFare = ROUTE_MEDIAN_FARES[selectedRoute] ?? null;
+  const selectedRouteObservations = selectedRoute === 'DEL-BLR' ? DEL_BLR_OBSERVATIONS : [];
+  const [selectedOrigin, selectedDestination] = selectedRoute.split('-');
 
   return (
     <div className="w-screen h-screen bg-grid-lines flex flex-col overflow-hidden font-sans">
@@ -39,8 +205,8 @@ export function App() {
           </div>
 
           <div className="flex items-center gap-3 text-[11px]">
-            <span className="inline-flex items-center gap-1.5 text-slate-600 font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Feed Active
+              <span className="inline-flex items-center gap-1.5 text-slate-600 font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Demo Active
             </span>
             <button onClick={() => setActiveTab('overview')} className="px-3.5 py-1 bg-white border border-dashed border-indigo-400 text-indigo-700 font-semibold rounded-lg hover:bg-slate-50 transition">
               Open Dashboard →
@@ -75,7 +241,7 @@ export function App() {
                 placeholder="Search corridors, hubs..." 
                 className="w-full bg-slate-50 border border-slate-200 rounded-lg pl-8 pr-3 py-1.5 text-xs focus:outline-none focus:border-slate-400"
               />
-              <svg className="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              <svg className="w-3.5 h-3.5 absolute left-2.5 top-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
             </div>
           </div>
 
@@ -124,12 +290,12 @@ export function App() {
 
           <div className="p-3 m-3 bg-white/90 rounded-xl border border-slate-200/80 text-xs shadow-xs">
             <div className="flex justify-between items-center mb-2 font-semibold text-slate-700">
-              <span>MONITORED SECTORS</span>
-              <span className="text-[10px] text-slate-500 font-normal">120 Active</span>
+              <span>SUPPORTED MVP ROUTES</span>
+              <span className="text-[10px] text-slate-500 font-normal">25 Supported</span>
             </div>
             <div className="grid grid-cols-2 gap-1 font-mono text-[11px] text-slate-600">
               <div className="bg-slate-50 p-1 rounded border border-slate-200 text-center">DEL-BOM</div>
-              <div className="bg-slate-50 p-1 rounded border border-slate-200 text-center">BLR-DEL</div>
+               <div className="bg-slate-50 p-1 rounded border border-slate-200 text-center">DEL-BLR</div>
               <div className="bg-slate-50 p-1 rounded border border-slate-200 text-center">BOM-GOI</div>
             </div>
           </div>
@@ -140,18 +306,18 @@ export function App() {
           
           {/* PAGE 1: WELCOME / LANDING */}
           {activeTab === 'welcome' && (
-            <div className="grid grid-cols-12 gap-8 items-start">
-              <div className="col-span-7 space-y-6">
+            <div className="grid grid-cols-12 gap-10 items-start">
+              <div className="col-span-7 space-y-7">
                 <div>
                   <span className="text-[11px] font-semibold text-slate-600 bg-slate-200/60 px-3 py-1 rounded-full border border-slate-300/50">
-                    • National Domestic Fare Observatory
+                    • National Domestic Fare Observatory · Live Demo
                   </span>
                   <h1 className="text-5xl font-black text-slate-900 mt-4 tracking-tight">Air Fare Index</h1>
                   <p className="text-xl font-semibold text-[#32533D] mt-1">
                     India’s Domestic Air Fare Intelligence Platform
                   </p>
                   <p className="text-xs text-slate-500 mt-3 leading-relaxed max-w-lg">
-                    Benchmark fare volatility, analyze 120+ domestic corridors, forecast price trajectories, and detect acute fare surges across India’s aviation network.
+                    Track observed domestic air fares, understand route-level price movements, and monitor India's aviation corridors.
                   </p>
                 </div>
 
@@ -164,50 +330,54 @@ export function App() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-2 text-xs">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-2 gap-4 pt-1 text-xs">
+                  <div className="space-y-2 rounded-xl border border-slate-200/80 bg-white/75 p-4 shadow-xs">
                     <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Air Fare Index Tracking</div>
-                    <p className="text-[11px] text-slate-400">Continuous baseline pricing measurement across domestic trunks.</p>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">Measure route-level fare movements using observed domestic fare data.</p>
                   </div>
-                  <div className="space-y-1">
-                    <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Fare Forecasting</div>
-                    <p className="text-[11px] text-slate-400">7 to 30-day forward-looking predictive price trajectories.</p>
-                  </div>
-                  <div className="space-y-1">
+                  <div className="space-y-2 rounded-xl border border-slate-200/80 bg-white/75 p-4 shadow-xs">
                     <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Route Intelligence</div>
-                    <p className="text-[11px] text-slate-400">Route-level spreads, yield dynamics, and distance metrics.</p>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">Inspect route prices, observations, airlines, and fare components.</p>
                   </div>
-                  <div className="space-y-1">
-                    <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Surge & Anomaly Alerts</div>
-                    <p className="text-[11px] text-slate-400">Early detection of irregular spikes & festival deviations.</p>
+                  <div className="space-y-2 rounded-xl border border-slate-200/80 bg-white/75 p-4 shadow-xs">
+                    <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Fare Forecasting</div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">View forward-looking fare estimates for supported domestic corridors.</p>
+                  </div>
+                  <div className="space-y-2 rounded-xl border border-slate-200/80 bg-white/75 p-4 shadow-xs">
+                    <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Fare Alerts & Anomalies</div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">Identify unusual increases and decreases in observed fares.</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-3 pt-4 border-t border-slate-200/80">
-                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase">ACTIVE CORRIDORS</div>
-                    <div className="text-lg font-bold text-slate-900 mt-0.5">120+ <span className="text-[9px] font-normal text-slate-400">Trunk</span></div>
+                <div className="grid grid-cols-4 gap-3 pt-5 border-t border-slate-200/80">
+                  <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">ACTIVE CORRIDORS</div>
+                    <div className="text-lg font-bold text-slate-900 mt-1">120+</div>
+                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">Domestic Corridors</div>
                   </div>
-                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase">BENCHMARK AFI</div>
-                    <div className="text-lg font-bold text-slate-900 mt-0.5">148.2 <span className="text-[9px] font-bold text-emerald-600">-2.4%</span></div>
+                  <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">MVP ROUTES</div>
+                    <div className="text-lg font-bold text-slate-900 mt-1">25</div>
+                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">Supported Corridors</div>
                   </div>
-                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase">SURGE ANOMALY</div>
-                    <div className="text-lg font-bold text-amber-600 mt-0.5">4 <span className="text-[9px] font-normal text-slate-400">Flagged</span></div>
+                  <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">OBSERVATIONS</div>
+                    <div className="text-lg font-bold text-slate-900 mt-1">125</div>
+                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">5 per MVP Route</div>
                   </div>
-                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase">SPIKE DURATION</div>
-                    <div className="text-lg font-bold text-slate-900 mt-0.5">24–48h <span className="text-[9px] font-normal text-slate-400">Avg</span></div>
+                  <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">ROUTE WEIGHT</div>
+                    <div className="text-lg font-bold text-slate-900 mt-1">4.0%</div>
+                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">Equal MVP Weight</div>
                   </div>
                 </div>
               </div>
 
               {/* Right Column: India Flight Network Map */}
-              <div className="col-span-5 bg-white/90 rounded-3xl p-6 border border-slate-200/80 shadow-sm relative space-y-4">
+              <div className="col-span-5 bg-white/90 rounded-3xl p-7 border border-slate-200/80 shadow-sm relative space-y-5">
                 <div className="flex justify-between items-center text-xs font-semibold text-slate-700 border-b border-slate-100 pb-2">
                   <span>• Indian Airspace Flight Network</span>
-                  <span className="text-emerald-600 text-[11px] font-normal">• Real-time Topology</span>
+                  <span className="text-emerald-600 text-[11px] font-normal">• Live Demo</span>
                 </div>
 
                 <div className="h-80 w-full relative flex items-center justify-center">
@@ -239,14 +409,14 @@ export function App() {
                     <g transform="translate(155, 115)">
                       <rect width="84" height="22" rx="6" fill="#ffffff" stroke="#e2e8f0" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.05))"/>
                       <text x="7" y="14" fill="#0f172a" fontSize="9" fontWeight="bold">DEL-BLR</text>
-                      <text x="50" y="14" fill="#d97706" fontSize="8" fontWeight="bold">Surge</text>
+                      <text x="50" y="14" fill="#d97706" fontSize="8" fontWeight="bold">Observed</text>
                     </g>
                   </svg>
                 </div>
 
                 <div className="flex justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-100">
-                  <span>• Primary Corridors — Regional Links</span>
-                  <span>Top 60 Trunks Monitored</span>
+                  <span>• Representative Corridors</span>
+                  <span>120+ Corridors Monitored</span>
                 </div>
               </div>
             </div>
@@ -255,55 +425,167 @@ export function App() {
           {/* PAGE 2: OVERVIEW & INDICES */}
           {activeTab === 'overview' && (
             <div className="space-y-6">
-              <div className="flex justify-between items-center border-b border-slate-200/60 pb-4">
+              <div className="flex justify-between items-start border-b border-slate-200/60 pb-5">
                 <div>
-                  <div className="text-xs text-slate-400 font-medium">Air Fare Index / <span className="text-slate-800 font-semibold">National Overview</span></div>
-                  <h2 className="text-xl font-bold text-slate-900 mt-1">Current national overview of domestic airfare movements and baseline pricing indices.</h2>
+                  <div className="text-xs text-slate-400 font-medium">Air Fare Index / <span className="text-slate-800 font-semibold">Dashboard</span></div>
+                  <h2 className="text-2xl font-bold text-slate-900 mt-1">Overview &amp; Indices</h2>
+                  <p className="text-xs text-slate-500 mt-1">National and route-level views of observed domestic air fare movements.</p>
                 </div>
-                <div className="text-xs text-slate-500 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-2xs">
-                  Data Updated: Today, 06:00 IST • 120 Corridors Monitored
+                <div className="flex flex-col items-end gap-2">
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#32533D] bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+                    <span className="text-emerald-600">●</span> Live Demo Active
+                  </span>
+                  <span className="text-[10px] text-slate-400">25 Supported MVP Corridors</span>
                 </div>
               </div>
 
               <div className="grid grid-cols-4 gap-4">
-                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs col-span-2 space-y-3">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">• NATIONAL COMPOSITE AIR FARE INDEX</span>
-                  <div className="text-4xl font-extrabold text-slate-900">148.2 <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">↗ +2.4% vs 30D Baseline</span></div>
-                  <p className="text-xs text-slate-500">Moderate upward movement observed across primary metro trunk corridors with seasonal capacity tightening.</p>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">NATIONAL COMPOSITE AIR FARE INDEX</span>
+                  <div className="text-3xl font-extrabold text-slate-900">148.2</div>
+                  <p className="text-[11px] text-slate-500">Composite MVP Index</p>
                 </div>
 
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">• AVERAGE DOMESTIC FARE</span>
-                  <div className="text-3xl font-extrabold text-slate-900">₹5,480 <span className="text-xs font-bold text-emerald-600">↗ +3.1%</span></div>
-                  <p className="text-[11px] text-slate-400">Prior Month: ₹5,315 (+₹165)</p>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">AVERAGE OBSERVED FARE</span>
+                  <div className="text-3xl font-extrabold text-slate-900">₹5,480</div>
+                  <p className="text-[11px] text-slate-500">Across available observations</p>
                 </div>
 
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">• MONITORED CORRIDORS</span>
-                  <div className="text-3xl font-extrabold text-slate-900">120 <span className="text-xs font-normal text-slate-400">Active</span></div>
-                  <p className="text-[11px] text-slate-400">60 Metro Trunks • 60 Regional</p>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">SUPPORTED MVP CORRIDORS</span>
+                  <div className="text-3xl font-extrabold text-slate-900">25</div>
+                  <p className="text-[11px] text-slate-500">Domestic routes</p>
+                </div>
+
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">OBSERVATIONS</span>
+                  <div className="text-3xl font-extrabold text-slate-900">125</div>
+                  <p className="text-[11px] text-slate-500">5 per MVP route</p>
                 </div>
               </div>
 
               {/* Index Movement Graph Card */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-start gap-4">
                   <div>
-                    <span className="text-[10px] font-bold uppercase text-slate-400">BENCHMARK TRAJECTORY</span>
-                    <h3 className="text-base font-bold text-slate-900">60-Day Domestic Air Fare Index Movement</h3>
+                    <span className="text-[10px] font-bold uppercase text-slate-400">INDEX MOVEMENT</span>
+                    <h3 className="text-base font-bold text-slate-900 mt-1">Air Fare Index Movement</h3>
+                    <p className="text-[11px] text-slate-500 mt-1">Representative movement from the current MVP observation dataset.</p>
                   </div>
-                  <div className="flex items-center gap-4 text-xs">
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-[#32533D] rounded-full"></span> Composite AFI</span>
-                    <span className="flex items-center gap-1.5"><span className="w-2.5 h-2.5 bg-blue-500 rounded-full"></span> 30-Day Moving Average</span>
+                  <div className="flex items-center gap-3 text-[10px] shrink-0">
+                    <span className="inline-flex items-center gap-1.5 text-slate-500 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg">
+                      <span className="w-2 h-2 bg-[#32533D] rounded-full"></span> Live Demo Dataset
+                    </span>
+                    <span className="flex items-center gap-1.5 text-slate-500"><span className="w-2 h-2 bg-blue-500 rounded-full"></span> Index</span>
                   </div>
                 </div>
 
-                <div className="h-44 w-full pt-2">
-                  <svg className="w-full h-full" viewBox="0 0 500 100" fill="none">
-                    <path d="M 0 80 Q 125 75, 250 50 T 500 20" stroke="#32533D" strokeWidth="2.5"/>
-                    <path d="M 0 85 Q 125 78, 250 58 T 500 30" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="4 4"/>
-                    <path d="M 0 80 Q 125 75, 250 50 T 500 20 L 500 100 L 0 100 Z" fill="#32533D" opacity="0.06"/>
+                <div className="h-48 w-full pt-2">
+                  <svg className="w-full h-full" viewBox="0 0 600 140" fill="none" role="img" aria-label="Air Fare Index Movement demo chart">
+                    <path d="M 40 20 H 570 M 40 55 H 570 M 40 90 H 570 M 40 120 H 570" stroke="#e2e8f0" strokeWidth="1"/>
+                    <path d="M 40 20 V 120 M 172 20 V 120 M 305 20 V 120 M 438 20 V 120 M 570 20 V 120" stroke="#f1f5f9" strokeWidth="1"/>
+                    <text x="4" y="23" fill="#94a3b8" fontSize="9">150</text>
+                    <text x="4" y="58" fill="#94a3b8" fontSize="9">135</text>
+                    <text x="4" y="93" fill="#94a3b8" fontSize="9">120</text>
+                    <text x="4" y="123" fill="#94a3b8" fontSize="9">100</text>
+                    <path d="M 40 98 Q 130 94, 215 78 T 385 55 T 500 42 T 570 30" stroke="#32533D" strokeWidth="2.5"/>
+                    <path d="M 40 105 Q 130 100, 215 86 T 385 66 T 500 54 T 570 45" stroke="#3b82f6" strokeWidth="1.5" strokeDasharray="4 4"/>
+                    <path d="M 40 98 Q 130 94, 215 78 T 385 55 T 500 42 T 570 30 L 570 120 L 40 120 Z" fill="#32533D" opacity="0.06"/>
+                    <line x1="570" y1="20" x2="570" y2="120" stroke="#32533D" strokeWidth="1" strokeDasharray="3 3"/>
+                    <circle cx="570" cy="30" r="4" fill="#32533D" stroke="white" strokeWidth="2"/>
+                    <text x="40" y="136" fill="#94a3b8" fontSize="9">Dataset start</text>
+                    <text x="530" y="136" fill="#32533D" fontSize="9" fontWeight="bold">Current</text>
                   </svg>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-12 gap-6">
+                <div className="col-span-8 bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+                  <div className="p-5 border-b border-slate-100 flex items-start justify-between gap-4">
+                    <div>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">ROUTE SNAPSHOT</span>
+                      <h3 className="text-base font-bold text-slate-900 mt-1">Representative MVP Corridors</h3>
+                      <p className="text-[11px] text-slate-500 mt-1">Five supported routes from the current demo scope.</p>
+                    </div>
+                    <button onClick={() => setActiveTab('route-analytics')} className="text-[11px] font-semibold text-[#32533D] hover:text-[#274230] whitespace-nowrap mt-1">
+                      Open Route Analytics →
+                    </button>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs">
+                      <thead className="bg-slate-50 text-[10px] uppercase tracking-wider text-slate-400">
+                        <tr>
+                          <th className="px-5 py-3 font-bold">Route</th>
+                          <th className="px-4 py-3 font-bold">Observed Fare</th>
+                          <th className="px-4 py-3 font-bold">Observations</th>
+                          <th className="px-5 py-3 font-bold text-right">Weight</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 text-slate-700">
+                        <tr>
+                          <td className="px-5 py-3 font-mono font-semibold text-slate-900">DEL-BOM</td>
+                          <td className="px-4 py-3">
+                            <details className="relative">
+                              <summary className="list-none cursor-pointer font-semibold text-slate-900">₹5,800 <span className="text-[10px] font-normal text-slate-500">+ taxes ⓘ</span></summary>
+                              <div className="absolute left-0 top-6 z-20 w-52 rounded-lg bg-slate-900 p-3 text-[10px] text-white shadow-xl">
+                                <div className="flex justify-between"><span className="text-slate-400">Fare Displayed</span><span>₹5,800</span></div>
+                                <div className="flex justify-between mt-1"><span className="text-slate-400">Taxes &amp; Fees</span><span>Not available</span></div>
+                                <div className="flex justify-between mt-2 border-t border-slate-700 pt-2 font-semibold"><span>Total Fare</span><span>Not available</span></div>
+                              </div>
+                            </details>
+                          </td>
+                          <td className="px-4 py-3 text-slate-500">5</td>
+                          <td className="px-5 py-3 text-right font-semibold">4.0%</td>
+                        </tr>
+                        <tr>
+                          <td className="px-5 py-3 font-mono font-semibold text-slate-900">DEL-BLR</td>
+                          <td className="px-4 py-3">
+                            <details className="relative">
+                              <summary className="list-none cursor-pointer font-semibold text-slate-900">₹6,120 <span className="text-[10px] font-normal text-slate-500">+ taxes ⓘ</span></summary>
+                              <div className="absolute left-0 top-6 z-20 w-52 rounded-lg bg-slate-900 p-3 text-[10px] text-white shadow-xl">
+                                <div className="flex justify-between"><span className="text-slate-400">Fare Displayed</span><span>₹6,120</span></div>
+                                <div className="flex justify-between mt-1"><span className="text-slate-400">Taxes &amp; Fees</span><span>Not available</span></div>
+                                <div className="flex justify-between mt-2 border-t border-slate-700 pt-2 font-semibold"><span>Total Fare</span><span>Not available</span></div>
+                              </div>
+                            </details>
+                          </td>
+                          <td className="px-4 py-3 text-slate-500">5</td>
+                          <td className="px-5 py-3 text-right font-semibold">4.0%</td>
+                        </tr>
+                        <tr>
+                          <td className="px-5 py-3 font-mono font-semibold text-slate-900">BOM-BLR</td>
+                          <td className="px-4 py-3 text-[11px] italic text-slate-400/80">Not available</td>
+                          <td className="px-4 py-3 text-slate-500">5</td>
+                          <td className="px-5 py-3 text-right font-semibold">4.0%</td>
+                        </tr>
+                        <tr>
+                          <td className="px-5 py-3 font-mono font-semibold text-slate-900">BLR-HYD</td>
+                          <td className="px-4 py-3 text-[11px] italic text-slate-400/80">Not available</td>
+                          <td className="px-4 py-3 text-slate-500">5</td>
+                          <td className="px-5 py-3 text-right font-semibold">4.0%</td>
+                        </tr>
+                        <tr>
+                          <td className="px-5 py-3 font-mono font-semibold text-slate-900">MAA-COK</td>
+                          <td className="px-4 py-3 text-[11px] italic text-slate-400/80">Not available</td>
+                          <td className="px-4 py-3 text-slate-500">5</td>
+                          <td className="px-5 py-3 text-right font-semibold">4.0%</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div className="col-span-4 bg-[#f4f7f5] rounded-2xl border border-emerald-100 shadow-xs p-5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#32533D]">LIVE DEMO DATA</span>
+                  <h3 className="text-base font-bold text-slate-900 mt-1">Current MVP observation set</h3>
+                  <div className="mt-5 space-y-3 text-xs">
+                    <div className="flex justify-between border-b border-emerald-100 pb-2"><span className="text-slate-500">Supported routes</span><span className="font-bold text-slate-900">25</span></div>
+                    <div className="flex justify-between border-b border-emerald-100 pb-2"><span className="text-slate-500">Observations</span><span className="font-bold text-slate-900">125</span></div>
+                    <div className="flex justify-between border-b border-emerald-100 pb-2"><span className="text-slate-500">Observations per route</span><span className="font-bold text-slate-900">5</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500">Route weighting</span><span className="font-bold text-slate-900">Equal · 4.0%</span></div>
+                  </div>
+                  <p className="text-[11px] leading-relaxed text-slate-600 mt-6 pt-4 border-t border-emerald-100">Observation-level fare data powers the index.</p>
                 </div>
               </div>
             </div>
@@ -312,93 +594,115 @@ export function App() {
           {/* PAGE 3: ROUTE ANALYTICS */}
           {activeTab === 'route-analytics' && (
             <div className="space-y-6">
-              <div className="flex justify-between items-center border-b border-slate-200/60 pb-4">
+              <div className="flex justify-between items-start border-b border-slate-200/60 pb-5">
                 <div>
-                  <h2 className="text-2xl font-bold text-slate-900">Route Analytics <span className="text-xs font-normal bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded ml-2">MVP Corridor Desk</span></h2>
-                  <p className="text-xs text-slate-500 mt-0.5">Analyze fare movements, underlying observation samples, and calculated route price indices.</p>
+                  <h2 className="text-2xl font-bold text-slate-900">Route Analytics</h2>
+                  <p className="text-xs text-slate-500 mt-1">Inspect observed fares, route-level pricing, and observation telemetry across supported domestic corridors.</p>
                 </div>
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#32533D] bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 shrink-0">
+                  <span className="text-emerald-600">●</span> Live Demo Active
+                </span>
               </div>
 
               <div className="bg-white p-4 rounded-xl border border-slate-200/80 flex items-center justify-between shadow-2xs">
                 <div className="flex items-center gap-4">
-                  <span className="text-xs font-bold text-slate-400 uppercase">Select Corridor:</span>
-                  <select value={selectedRoute} onChange={(e) => setSelectedRoute(e.target.value)} className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-800">
-                    <option value="DEL-BLR">DEL-BLR (Delhi ⇄ Bengaluru)</option>
-                    <option value="DEL-BOM">DEL-BOM (Delhi ⇄ Mumbai)</option>
-                    <option value="BOM-GOI">BOM-GOI (Mumbai ⇄ Goa)</option>
+                  <label htmlFor="route-selector" className="text-xs font-bold text-slate-400 uppercase">Select Route:</label>
+                  <select id="route-selector" value={selectedRoute} onChange={(e) => setSelectedRoute(e.target.value as MvpRoute)} className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#32533D]">
+                    {MVP_ROUTES.map((route) => <option key={route} value={route}>{route}</option>)}
                   </select>
                 </div>
-                <span className="text-xs text-slate-500">Corridor 2 of 25 in MVP Set</span>
+                <span className="text-xs text-slate-500">MVP route {selectedRouteIndex} of 25</span>
               </div>
 
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-4 gap-4">
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
-                  <span className="text-[10px] font-bold uppercase text-slate-400">MEDIAN ROUTE PRICE</span>
-                  <div className="text-3xl font-extrabold text-slate-900">₹6,120 <span className="text-xs font-normal text-slate-400">INR</span></div>
-                  <p className="text-xs text-slate-500">Calculated from 5 route observations.</p>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">ROUTE</span>
+                  <div className="text-2xl font-extrabold text-slate-900 font-mono">{selectedRoute}</div>
+                  <p className="text-xs text-slate-500">{selectedOrigin} <span className="text-slate-300">→</span> {selectedDestination}</p>
                 </div>
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
-                  <span className="text-[10px] font-bold uppercase text-slate-400">MVP ROUTE WEIGHT</span>
-                  <div className="text-3xl font-extrabold text-slate-900">4.0% <span className="text-xs font-normal text-slate-400">(1 / 25)</span></div>
-                  <p className="text-xs text-slate-500">Equal corridor weighting across MVP scope.</p>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">OBSERVATION COUNT</span>
+                  <div className="text-2xl font-extrabold text-slate-900">5</div>
+                  <p className="text-xs text-slate-500">5 observations for the MVP route</p>
                 </div>
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
-                  <span className="text-[10px] font-bold uppercase text-slate-400">OBSERVATION TELEMETRY</span>
-                  <div className="text-3xl font-extrabold text-emerald-700">5 of 5 Collected</div>
-                  <p className="text-xs text-slate-500">Min: ₹5,750 • Max: ₹6,490</p>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MEDIAN ROUTE FARE</span>
+                  <div className="text-2xl font-extrabold text-slate-900">
+                    <RouteFareBreakdown fareDisplayed={selectedRouteFare} taxes={null} totalFare={null} currency="INR" />
+                  </div>
+                  <p className="text-xs text-slate-500">Median route price where available</p>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MVP ROUTE WEIGHT</span>
+                  <div className="text-2xl font-extrabold text-slate-900">4.0%</div>
+                  <p className="text-xs text-slate-500">Equal weighting · 1 / 25 routes</p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
-                <div className="p-4 border-b border-slate-100 bg-slate-50/50 font-bold text-xs text-slate-800">
-                  Route Fare Observations (Sample Set N=5) — Verified GDS / Direct API
+              <div className="bg-[#f7f8fb] rounded-2xl border border-dashed border-indigo-200 p-4 flex items-center gap-4">
+                <div className="w-9 h-9 rounded-xl bg-white border border-indigo-100 flex items-center justify-center text-indigo-500 shrink-0">↗</div>
+                <div>
+                  <div className="text-xs font-bold text-slate-800">How this route contributes to the index</div>
+                  <p className="text-[11px] text-slate-500 mt-1">5 observations <span className="text-indigo-400 mx-1">→</span> median route price <span className="text-indigo-400 mx-1">→</span> 4.0% MVP route weight</p>
                 </div>
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-200/60 text-slate-400 bg-slate-50">
-                      <th className="p-3">Obs ID</th>
-                      <th className="p-3">Collected At</th>
-                      <th className="p-3">Airline & Flight</th>
-                      <th className="p-3">Dept Time</th>
-                      <th className="p-3">Fare Displayed</th>
-                      <th className="p-3">Taxes & Fees</th>
-                      <th className="p-3">Total Fare</th>
-                      <th className="p-3">Source</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700">
-                    <tr>
-                      <td className="p-3 font-mono font-medium">OBS-10921</td>
-                      <td className="p-3 text-slate-400">15 Nov 08:12</td>
-                      <td className="p-3 font-medium">Akasa Air QP-1342</td>
-                      <td className="p-3">07:28</td>
-                      <td className="p-3">₹5,100</td>
-                      <td className="p-3">₹650</td>
-                      <td className="p-3 font-bold text-slate-900"><FareDisplay amount={5100} taxes={650} /></td>
-                      <td className="p-3 text-emerald-700 font-medium">Direct API</td>
-                    </tr>
-                    <tr>
-                      <td className="p-3 font-mono font-medium">OBS-10922</td>
-                      <td className="p-3 text-slate-400">15 Nov 08:15</td>
-                      <td className="p-3 font-medium">IndiGo 6E-2131</td>
-                      <td className="p-3">09:45</td>
-                      <td className="p-3">₹5,250</td>
-                      <td className="p-3">₹698</td>
-                      <td className="p-3 font-bold text-slate-900"><FareDisplay amount={5250} taxes={698} /></td>
-                      <td className="p-3 text-blue-700 font-medium">GDS Aggregator</td>
-                    </tr>
-                    <tr className="bg-emerald-50/40">
-                      <td className="p-3 font-mono font-medium">OBS-10923</td>
-                      <td className="p-3 text-slate-400">15 Nov 08:20</td>
-                      <td className="p-3 font-medium">IndiGo 6E-5012</td>
-                      <td className="p-3">14:18</td>
-                      <td className="p-3">₹5,380</td>
-                      <td className="p-3">₹740</td>
-                      <td className="p-3 font-bold text-slate-900"><FareDisplay amount={5380} taxes={740} /></td>
-                      <td className="p-3 text-emerald-800 font-medium">GDS Aggregator (Median)</td>
-                    </tr>
-                  </tbody>
-                </table>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+                <div className="p-5 border-b border-slate-100 flex items-start justify-between gap-4">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">OBSERVATION TELEMETRY</span>
+                    <h3 className="text-base font-bold text-slate-900 mt-1">Observation Telemetry</h3>
+                    <p className="text-[11px] text-slate-500 mt-1">5 observations · 5 / 5 route observations available</p>
+                  </div>
+                  <span className="text-[10px] font-semibold text-[#32533D] bg-emerald-50 border border-emerald-100 px-2.5 py-1.5 rounded-lg">MVP sample set</span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[1160px] text-left border-collapse text-xs">
+                    <caption className="sr-only">Observation-level fare data for {selectedRoute}</caption>
+                    <thead>
+                      <tr className="border-b border-slate-200/60 text-[10px] uppercase tracking-wider text-slate-400 bg-slate-50">
+                        <th className="px-4 py-3 font-bold">Observation ID</th>
+                        <th className="px-4 py-3 font-bold">Collected At</th>
+                        <th className="px-4 py-3 font-bold">Travel Date</th>
+                        <th className="px-4 py-3 font-bold">Airline</th>
+                        <th className="px-4 py-3 font-bold">Flight</th>
+                        <th className="px-4 py-3 font-bold">Departure</th>
+                        <th className="px-4 py-3 font-bold">Fare</th>
+                        <th className="px-4 py-3 font-bold">Fare Type</th>
+                        <th className="px-4 py-3 font-bold">Source</th>
+                        <th className="px-4 py-3 font-bold">Round Trip</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-700">
+                      {selectedRouteObservations.length > 0 ? selectedRouteObservations.map((observation, index) => (
+                        <tr key={observation.observation_id} className={index === 2 ? 'bg-emerald-50/40' : 'hover:bg-slate-50/70'}>
+                          <td className="px-4 py-3">
+                            <div className="font-mono font-semibold text-slate-900">{observation.observation_id}</div>
+                            <div className="text-[10px] text-slate-400 mt-1">{observation.origin} <span className="text-slate-300">→</span> {observation.destination}</div>
+                          </td>
+                          <td className="px-4 py-3 text-slate-500">{observation.collected_at ?? 'Not available'}</td>
+                          <td className="px-4 py-3 text-slate-500">{observation.travel_date ?? 'Not available'}</td>
+                          <td className="px-4 py-3 font-medium text-slate-800">{observation.airline ?? 'Not available'}</td>
+                          <td className="px-4 py-3 font-mono text-slate-600">{observation.flight_number ?? 'Not available'}</td>
+                          <td className="px-4 py-3 text-slate-600">{observation.departure_time ?? 'Not available'}</td>
+                          <td className="px-4 py-3"><RouteFareBreakdown fareDisplayed={observation.fare_displayed} taxes={observation.taxes} totalFare={observation.total_fare} currency={observation.currency} /></td>
+                          <td className="px-4 py-3 text-slate-500">{observation.fare_type ?? 'Not available'}</td>
+                          <td className="px-4 py-3">
+                            <span className={observation.source ? 'font-medium text-emerald-700' : 'italic text-slate-400'}>{observation.source ?? 'Not available'}</span>
+                          </td>
+                          <td className="px-4 py-3 text-slate-600">{observation.is_round_trip === true ? 'Round trip' : observation.is_round_trip === false ? 'One-way' : 'Not available'}</td>
+                        </tr>
+                      )) : (
+                        <tr>
+                          <td colSpan={10} className="px-6 py-12 text-center">
+                            <div className="text-sm font-semibold text-slate-700">Observation rows are not available for {selectedRoute} in the current demo set.</div>
+                            <div className="text-xs text-slate-400 mt-1">The route remains part of the 25-route MVP basket and is ready for observation-level data.</div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
@@ -523,8 +827,8 @@ export function App() {
 
       {/* FOOTER RIBBON */}
       <footer className="bg-white/80 border-t border-slate-200 px-8 py-3 flex justify-between text-[11px] text-slate-400 shrink-0">
-        <div>AeroMetric Intelligence • National Air Fare Index & Yield Dynamics Protocol</div>
-        <div>DGCA Tariff Telemetry • GDS Historical Curves • SIH 2024 Demo Prototype</div>
+        <div>Air Fare Index • Domestic Aviation Fare Intelligence</div>
+        <div>Live Demo • MVP Observation Dataset</div>
       </footer>
 
     </div>
