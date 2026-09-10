@@ -1,0 +1,296 @@
+PASS 3 — REFINE THE DASHBOARD / OVERVIEW & INDICES SCREEN
+
+Work ONLY on the existing "Overview & Indices" / Dashboard screen.
+
+Do NOT modify:
+- Home / Welcome screen
+- Route Analytics
+- Fare Forecast
+- Alerts & Surges
+- Methodology & Data
+- Backend logic
+- API structure
+- Existing Vite configuration
+
+The goal is to make the existing Dashboard feel refined, elegant, premium, and consistent with the Air Fare Index visual language established on the Home screen.
+
+IMPORTANT PRODUCT SCOPE:
+
+This is a LIVE DEMO of the Air Fare Index MVP.
+
+The MVP currently has:
+- 25 supported domestic routes
+- 5 observations per route
+- 125 total observations
+- observations should represent different source observations where available
+- equal MVP route weighting
+- each route weight = 1/25 = 4.0%
+
+Do NOT describe the MVP as having 120+ supported routes.
+
+You may use wording such as:
+"25 Supported MVP Corridors"
+"125 Observations"
+"5 Observations per Route"
+"Live Demo"
+
+Do NOT invent passenger traffic, GDS PNR counts, seat factors, demand metrics, airline capacity, or ML performance metrics.
+
+--------------------------------
+DASHBOARD VISUAL DIRECTION
+--------------------------------
+
+Make the dashboard feel like a professional aviation/economic intelligence product.
+
+Use:
+- clean white/light background
+- very subtle blue-grey grid background
+- dark navy typography
+- muted aviation green as the primary accent
+- restrained purple/lilac dashed borders where appropriate
+- generous whitespace
+- rounded cards
+- thin borders
+- subtle shadows
+- elegant typography hierarchy
+- compact data-dense layouts without visual clutter
+
+Do NOT make it look like a generic SaaS admin dashboard.
+
+Preserve the existing sidebar and top navigation structure.
+
+--------------------------------
+PAGE HEADER
+--------------------------------
+
+Title:
+
+"Overview & Indices"
+
+Subtitle:
+
+"National and route-level views of observed domestic air fare movements."
+
+Add a small status indicator:
+
+"● Live Demo Active"
+
+Do not claim that this is a real-time production feed.
+
+--------------------------------
+TOP KPI CARDS
+--------------------------------
+
+Create a polished row of 4 primary KPI cards:
+
+1. NATIONAL COMPOSITE AIR FARE INDEX
+Value:
+Use the existing prototype value for now if one already exists.
+
+Small supporting text:
+"Composite MVP Index"
+
+2. AVERAGE OBSERVED FARE
+Value:
+Use the existing prototype/demo value.
+
+Supporting text:
+"Across available observations"
+
+3. SUPPORTED MVP CORRIDORS
+Value:
+"25"
+
+Supporting text:
+"Domestic routes"
+
+4. OBSERVATIONS
+Value:
+"125"
+
+Supporting text:
+"5 per MVP route"
+
+Do not invent additional metrics.
+
+--------------------------------
+INDEX MOVEMENT
+--------------------------------
+
+Keep the existing index movement chart if present, but refine it visually.
+
+The chart should communicate:
+
+"Air Fare Index Movement"
+
+Use:
+- clean line chart
+- subtle grid
+- restrained axis labels
+- clear current-period marker
+- no unnecessary chart decoration
+
+Add a small label:
+
+"Live Demo Dataset"
+
+Do NOT claim that the chart represents historical national data unless the backend actually provides it.
+
+Prototype values are acceptable for now.
+
+--------------------------------
+ROUTE SNAPSHOT
+--------------------------------
+
+Add/refine a compact section titled:
+
+"Route Snapshot"
+
+Show a few representative supported routes such as:
+
+DEL-BOM
+DEL-BLR
+BOM-BLR
+BLR-HYD
+MAA-COK
+
+Each route row/card can show:
+
+- Route
+- Median / observed fare where available
+- Observation count
+- Route weight
+
+For MVP route weight display:
+
+"4.0%"
+
+Do not fabricate route-specific prices if the data is not available.
+
+Use existing demo values where necessary, but structure them so they can easily be replaced by backend data.
+
+--------------------------------
+LIVE DEMO DATA CONTEXT
+--------------------------------
+
+Include a small elegant information panel:
+
+"LIVE DEMO DATA"
+
+Show:
+
+25 supported routes
+125 observations
+5 observations per route
+Equal MVP route weighting
+
+Add:
+
+"Observation-level fare data powers the index."
+
+Do not mention unsupported datasets.
+
+--------------------------------
+FARE DISPLAY RULE
+--------------------------------
+
+Whenever a fare is shown, use:
+
+₹X,XXX
++ taxes  ⓘ
+
+The info interaction should expose:
+
+Fare Displayed
+Taxes & Fees
+Total Fare
+
+Use:
+fare_displayed
+taxes
+total_fare
+currency
+
+when backend data is available.
+
+Never invent tax values.
+
+Do NOT create a separate tax page.
+
+--------------------------------
+NAVIGATION
+--------------------------------
+
+Dashboard navigation must remain connected to:
+
+Home
+Overview & Indices
+Route Analytics
+Fare Forecast
+Alerts & Surges
+Methodology & Data
+
+The dashboard should link naturally into Route Analytics for deeper route-level analysis.
+
+--------------------------------
+IMPORTANT DATA MODEL
+--------------------------------
+
+Keep the UI compatible with these observation fields:
+
+observation_id
+collected_at
+travel_date
+origin
+destination
+route
+airline
+flight_number
+departure_time
+fare_displayed
+currency
+fare_type
+source
+is_round_trip
+taxes
+total_fare
+
+Do not add unsupported fields.
+
+--------------------------------
+LIVE DEMO BEHAVIOUR
+--------------------------------
+
+Where the current application already has demo/static data, keep it functional.
+
+If there is an existing live-demo mechanism, make the dashboard use it rather than replacing it.
+
+The demo should make it clear that the UI is populated from the MVP observation dataset.
+
+Do NOT implement fake real-time networking or fake external feeds.
+
+--------------------------------
+RESPONSIVE / POLISH
+--------------------------------
+
+Fix:
+- excessive whitespace
+- uneven card heights
+- awkward alignment
+- inconsistent typography
+- overly large elements
+- cramped sections
+- unnecessary borders
+- inconsistent corner radii
+
+Keep the page visually consistent with the refined Home screen.
+
+Do not redesign the application from scratch.
+
+Do not create duplicate Dashboard screens.
+
+After making the changes:
+1. Run the frontend build.
+2. Verify the Overview & Indices page renders correctly.
+3. Verify navigation still works.
+4. Do not modify unrelated screens.
