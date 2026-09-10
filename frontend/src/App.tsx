@@ -124,12 +124,12 @@ export function App() {
 
           <div className="p-3 m-3 bg-white/90 rounded-xl border border-slate-200/80 text-xs shadow-xs">
             <div className="flex justify-between items-center mb-2 font-semibold text-slate-700">
-              <span>MONITORED SECTORS</span>
-              <span className="text-[10px] text-slate-500 font-normal">120 Active</span>
+              <span>SUPPORTED MVP ROUTES</span>
+              <span className="text-[10px] text-slate-500 font-normal">25 Supported</span>
             </div>
             <div className="grid grid-cols-2 gap-1 font-mono text-[11px] text-slate-600">
               <div className="bg-slate-50 p-1 rounded border border-slate-200 text-center">DEL-BOM</div>
-              <div className="bg-slate-50 p-1 rounded border border-slate-200 text-center">BLR-DEL</div>
+               <div className="bg-slate-50 p-1 rounded border border-slate-200 text-center">DEL-BLR</div>
               <div className="bg-slate-50 p-1 rounded border border-slate-200 text-center">BOM-GOI</div>
             </div>
           </div>
@@ -389,19 +389,19 @@ export function App() {
                         </tr>
                         <tr>
                           <td className="px-5 py-3 font-mono font-semibold text-slate-900">BOM-BLR</td>
-                          <td className="px-4 py-3 text-slate-400">Not available</td>
+                          <td className="px-4 py-3 text-[11px] italic text-slate-400/80">Not available</td>
                           <td className="px-4 py-3 text-slate-500">5</td>
                           <td className="px-5 py-3 text-right font-semibold">4.0%</td>
                         </tr>
                         <tr>
                           <td className="px-5 py-3 font-mono font-semibold text-slate-900">BLR-HYD</td>
-                          <td className="px-4 py-3 text-slate-400">Not available</td>
+                          <td className="px-4 py-3 text-[11px] italic text-slate-400/80">Not available</td>
                           <td className="px-4 py-3 text-slate-500">5</td>
                           <td className="px-5 py-3 text-right font-semibold">4.0%</td>
                         </tr>
                         <tr>
                           <td className="px-5 py-3 font-mono font-semibold text-slate-900">MAA-COK</td>
-                          <td className="px-4 py-3 text-slate-400">Not available</td>
+                          <td className="px-4 py-3 text-[11px] italic text-slate-400/80">Not available</td>
                           <td className="px-4 py-3 text-slate-500">5</td>
                           <td className="px-5 py-3 text-right font-semibold">4.0%</td>
                         </tr>
@@ -639,8 +639,8 @@ export function App() {
 
       {/* FOOTER RIBBON */}
       <footer className="bg-white/80 border-t border-slate-200 px-8 py-3 flex justify-between text-[11px] text-slate-400 shrink-0">
-        <div>AeroMetric Intelligence • National Air Fare Index & Yield Dynamics Protocol</div>
-        <div>DGCA Tariff Telemetry • GDS Historical Curves • SIH 2024 Demo Prototype</div>
+        <div>Air Fare Index • Domestic Aviation Fare Intelligence</div>
+        <div>Live Demo • MVP Observation Dataset</div>
       </footer>
 
     </div>
