@@ -1,0 +1,318 @@
+PASS 4 — REFINE ROUTE ANALYTICS
+
+Work ONLY on the existing Route Analytics screen.
+
+Do NOT modify:
+- Home
+- Overview & Indices
+- Fare Forecast
+- Alerts & Surges
+- Methodology & Data
+- Backend/API logic
+- Vite configuration
+
+The goal is to make Route Analytics feel like a polished aviation fare-intelligence workspace while preserving the existing information architecture.
+
+IMPORTANT:
+This page must be based ONLY on our actual MVP observation model.
+
+--------------------------------
+PAGE HEADER
+--------------------------------
+
+Title:
+
+"Route Analytics"
+
+Subtitle:
+
+"Inspect observed fares, route-level pricing, and observation telemetry across supported domestic corridors."
+
+Add a small status label:
+
+"Live Demo Active"
+
+Do not claim production real-time data.
+
+--------------------------------
+ROUTE SELECTOR
+--------------------------------
+
+Keep the existing route selector.
+
+It must contain ONLY the official 25 MVP routes:
+
+DEL-BOM
+DEL-BLR
+DEL-HYD
+DEL-CCU
+DEL-MAA
+DEL-AMD
+DEL-PNQ
+DEL-GOI
+DEL-COK
+DEL-GAU
+BOM-BLR
+BOM-HYD
+BOM-MAA
+BOM-CCU
+BOM-AMD
+BOM-GOI
+BLR-HYD
+BLR-MAA
+BLR-CCU
+BLR-GOI
+BLR-COK
+HYD-MAA
+HYD-CCU
+CCU-GAU
+MAA-COK
+
+Default route may remain DEL-BLR.
+
+--------------------------------
+ROUTE SUMMARY
+--------------------------------
+
+For the selected route, show a refined summary area containing:
+
+Route
+Origin → Destination
+
+Observation Count
+5 observations for the MVP route
+
+Median Route Fare
+Use the existing demo/calculated value where available.
+
+MVP Route Weight
+4.0%
+
+Make these four pieces visually balanced rather than oversized.
+
+Do NOT invent additional KPIs.
+
+--------------------------------
+FARE DISPLAY
+--------------------------------
+
+Whenever a fare appears, use this presentation:
+
+₹X,XXX
++ taxes  ⓘ
+
+The "+ taxes" / info interaction must open a compact fare breakdown.
+
+BREAKDOWN:
+
+Fare Displayed
+₹X,XXX
+
+Taxes & Fees
+₹XXX
+
+Total Fare
+₹X,XXX
+
+Use the actual fields:
+
+fare_displayed
+taxes
+total_fare
+currency
+
+when backend data is connected.
+
+Never invent tax values.
+
+Do NOT create a separate taxes page.
+
+--------------------------------
+OBSERVATION TELEMETRY
+--------------------------------
+
+Keep an elegant section showing:
+
+"Observation Telemetry"
+
+Display:
+
+5 observations
+5 / 5 route observations available
+
+This refers to the MVP structure and should not imply that five identical observations are required from one airline.
+
+--------------------------------
+OBSERVATION TABLE
+--------------------------------
+
+This is the most important section.
+
+Keep the existing detailed observation table but refine its visual design.
+
+Columns:
+
+Observation ID
+Collected At
+Travel Date
+Airline
+Flight
+Departure
+Fare
+Fare Type
+Source
+Round Trip
+
+Where space permits, taxes/total can be revealed through the fare breakdown rather than making the table excessively wide.
+
+Do NOT remove useful observation-level traceability.
+
+Each observation must visibly or accessibly preserve:
+
+observation_id
+collected_at
+travel_date
+origin
+destination
+route
+airline
+flight_number
+departure_time
+fare_displayed
+currency
+fare_type
+source
+is_round_trip
+taxes
+total_fare
+
+--------------------------------
+TABLE DESIGN
+--------------------------------
+
+Make the table feel premium and data-focused:
+
+- clear column hierarchy
+- compact rows
+- subtle dividers
+- muted metadata
+- dark navy primary text
+- green accent for selected/important values
+- rounded outer container
+- horizontal scrolling on smaller screens rather than crushing columns
+
+Do not use excessive colors.
+
+--------------------------------
+SOURCE / AIRLINE DISPLAY
+--------------------------------
+
+Airline and source should be clearly distinguishable.
+
+Example structure:
+
+Airline
+Flight Number
+
+Source
+
+Do not invent airlines or sources if they are not in the dataset.
+
+--------------------------------
+ROUND TRIP
+--------------------------------
+
+Display the actual is_round_trip value cleanly:
+
+One-way
+or
+Round trip
+
+Do not infer it from other fields.
+
+--------------------------------
+METHODOLOGY CONTEXT
+--------------------------------
+
+Add a small unobtrusive context panel near the route summary:
+
+"How this route contributes to the index"
+
+Show:
+
+5 observations
+→ median route price
+→ 4.0% MVP route weight
+
+This should be explanatory, not a second analytics dashboard.
+
+--------------------------------
+INDEX METHODOLOGY
+--------------------------------
+
+The UI must remain compatible with:
+
+5 observations per route
+→ median route price
+→ weighted Laspeyres index
+
+MVP weighting:
+
+25 supported routes
+Equal weighting
+1/25 = 4.0% per route
+
+Do not claim passenger-traffic weighting is currently implemented.
+
+--------------------------------
+NO UNSUPPORTED ANALYTICS
+--------------------------------
+
+Do NOT add:
+
+- GDS yield
+- PNR counts
+- seat factor
+- load factor
+- capacity
+- passenger demand
+- booking curves
+- airline performance scores
+- route profitability
+- ML confidence
+- prediction intervals
+- invented volatility scores
+- invented yield metrics
+- operational airline intelligence
+
+--------------------------------
+VISUAL STYLE
+--------------------------------
+
+Match the refined Home and Dashboard:
+
+- elegant white/light surfaces
+- subtle blue-grey grid background
+- dark navy typography
+- aviation green accents
+- restrained lilac dashed borders
+- generous spacing
+- rounded cards
+- thin borders
+- subtle shadows
+- premium data-product feel
+
+Avoid generic SaaS styling.
+
+Do NOT redesign the whole application.
+
+Do NOT create a duplicate Route Analytics page.
+
+After implementation:
+1. Run frontend build.
+2. Run lint if available.
+3. Verify route selector works.
+4. Verify observation table renders.
+5. Verify fare tax breakdown interaction works.
+6. Verify navigation to/from Dashboard still works.
+7. Do not modify unrelated pages.
