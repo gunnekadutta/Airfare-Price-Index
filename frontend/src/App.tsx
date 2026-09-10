@@ -39,8 +39,8 @@ export function App() {
           </div>
 
           <div className="flex items-center gap-3 text-[11px]">
-            <span className="inline-flex items-center gap-1.5 text-slate-600 font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Feed Active
+              <span className="inline-flex items-center gap-1.5 text-slate-600 font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> Live Demo Active
             </span>
             <button onClick={() => setActiveTab('overview')} className="px-3.5 py-1 bg-white border border-dashed border-indigo-400 text-indigo-700 font-semibold rounded-lg hover:bg-slate-50 transition">
               Open Dashboard →
@@ -140,18 +140,18 @@ export function App() {
           
           {/* PAGE 1: WELCOME / LANDING */}
           {activeTab === 'welcome' && (
-            <div className="grid grid-cols-12 gap-8 items-start">
-              <div className="col-span-7 space-y-6">
+            <div className="grid grid-cols-12 gap-10 items-start">
+              <div className="col-span-7 space-y-7">
                 <div>
                   <span className="text-[11px] font-semibold text-slate-600 bg-slate-200/60 px-3 py-1 rounded-full border border-slate-300/50">
-                    • National Domestic Fare Observatory
+                    • National Domestic Fare Observatory · Live Demo
                   </span>
                   <h1 className="text-5xl font-black text-slate-900 mt-4 tracking-tight">Air Fare Index</h1>
                   <p className="text-xl font-semibold text-[#32533D] mt-1">
                     India’s Domestic Air Fare Intelligence Platform
                   </p>
                   <p className="text-xs text-slate-500 mt-3 leading-relaxed max-w-lg">
-                    Benchmark fare volatility, analyze 120+ domestic corridors, forecast price trajectories, and detect acute fare surges across India’s aviation network.
+                    Track observed domestic air fares, understand route-level price movements, and monitor India's aviation corridors.
                   </p>
                 </div>
 
@@ -164,50 +164,54 @@ export function App() {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-2 text-xs">
-                  <div className="space-y-1">
+                <div className="grid grid-cols-2 gap-4 pt-1 text-xs">
+                  <div className="space-y-2 rounded-xl border border-slate-200/80 bg-white/75 p-4 shadow-xs">
                     <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Air Fare Index Tracking</div>
-                    <p className="text-[11px] text-slate-400">Continuous baseline pricing measurement across domestic trunks.</p>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">Measure route-level fare movements using observed domestic fare data.</p>
                   </div>
-                  <div className="space-y-1">
-                    <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Fare Forecasting</div>
-                    <p className="text-[11px] text-slate-400">7 to 30-day forward-looking predictive price trajectories.</p>
-                  </div>
-                  <div className="space-y-1">
+                  <div className="space-y-2 rounded-xl border border-slate-200/80 bg-white/75 p-4 shadow-xs">
                     <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Route Intelligence</div>
-                    <p className="text-[11px] text-slate-400">Route-level spreads, yield dynamics, and distance metrics.</p>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">Inspect route prices, observations, airlines, and fare components.</p>
                   </div>
-                  <div className="space-y-1">
-                    <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Surge & Anomaly Alerts</div>
-                    <p className="text-[11px] text-slate-400">Early detection of irregular spikes & festival deviations.</p>
+                  <div className="space-y-2 rounded-xl border border-slate-200/80 bg-white/75 p-4 shadow-xs">
+                    <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Fare Forecasting</div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">View forward-looking fare estimates for supported domestic corridors.</p>
+                  </div>
+                  <div className="space-y-2 rounded-xl border border-slate-200/80 bg-white/75 p-4 shadow-xs">
+                    <div className="font-bold text-slate-800 flex items-center gap-1.5">✓ Fare Alerts & Anomalies</div>
+                    <p className="text-[11px] text-slate-500 leading-relaxed">Identify unusual increases and decreases in observed fares.</p>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-4 gap-3 pt-4 border-t border-slate-200/80">
-                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase">ACTIVE CORRIDORS</div>
-                    <div className="text-lg font-bold text-slate-900 mt-0.5">120+ <span className="text-[9px] font-normal text-slate-400">Trunk</span></div>
+                <div className="grid grid-cols-4 gap-3 pt-5 border-t border-slate-200/80">
+                  <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">ACTIVE CORRIDORS</div>
+                    <div className="text-lg font-bold text-slate-900 mt-1">120+</div>
+                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">Domestic Corridors</div>
                   </div>
-                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase">BENCHMARK AFI</div>
-                    <div className="text-lg font-bold text-slate-900 mt-0.5">148.2 <span className="text-[9px] font-bold text-emerald-600">-2.4%</span></div>
+                  <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">MVP ROUTES</div>
+                    <div className="text-lg font-bold text-slate-900 mt-1">25</div>
+                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">Supported Corridors</div>
                   </div>
-                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase">SURGE ANOMALY</div>
-                    <div className="text-lg font-bold text-amber-600 mt-0.5">4 <span className="text-[9px] font-normal text-slate-400">Flagged</span></div>
+                  <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">OBSERVATIONS</div>
+                    <div className="text-lg font-bold text-slate-900 mt-1">125</div>
+                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">5 per MVP Route</div>
                   </div>
-                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase">SPIKE DURATION</div>
-                    <div className="text-lg font-bold text-slate-900 mt-0.5">24–48h <span className="text-[9px] font-normal text-slate-400">Avg</span></div>
+                  <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">ROUTE WEIGHT</div>
+                    <div className="text-lg font-bold text-slate-900 mt-1">4.0%</div>
+                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">Equal MVP Weight</div>
                   </div>
                 </div>
               </div>
 
               {/* Right Column: India Flight Network Map */}
-              <div className="col-span-5 bg-white/90 rounded-3xl p-6 border border-slate-200/80 shadow-sm relative space-y-4">
+              <div className="col-span-5 bg-white/90 rounded-3xl p-7 border border-slate-200/80 shadow-sm relative space-y-5">
                 <div className="flex justify-between items-center text-xs font-semibold text-slate-700 border-b border-slate-100 pb-2">
                   <span>• Indian Airspace Flight Network</span>
-                  <span className="text-emerald-600 text-[11px] font-normal">• Real-time Topology</span>
+                  <span className="text-emerald-600 text-[11px] font-normal">• Live Demo</span>
                 </div>
 
                 <div className="h-80 w-full relative flex items-center justify-center">
@@ -239,14 +243,14 @@ export function App() {
                     <g transform="translate(155, 115)">
                       <rect width="84" height="22" rx="6" fill="#ffffff" stroke="#e2e8f0" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.05))"/>
                       <text x="7" y="14" fill="#0f172a" fontSize="9" fontWeight="bold">DEL-BLR</text>
-                      <text x="50" y="14" fill="#d97706" fontSize="8" fontWeight="bold">Surge</text>
+                      <text x="50" y="14" fill="#d97706" fontSize="8" fontWeight="bold">Observed</text>
                     </g>
                   </svg>
                 </div>
 
                 <div className="flex justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-100">
-                  <span>• Primary Corridors — Regional Links</span>
-                  <span>Top 60 Trunks Monitored</span>
+                  <span>• Representative Corridors</span>
+                  <span>120+ Corridors Monitored</span>
                 </div>
               </div>
             </div>
