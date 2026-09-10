@@ -1,0 +1,160 @@
+PASS 2 — REFINE THE HOME / LANDING PAGE
+
+Work ONLY on the existing Home / Landing page.
+
+Do not create a new page.
+Do not modify the backend.
+Do not modify the other pages yet.
+Do not change the overall page structure.
+
+IMPORTANT PRODUCT CONTEXT:
+
+The product concept monitors 120+ domestic corridors.
+
+For the MVP implementation, we have a defined set of 25 supported corridors, with 5 fare observations per route from different sources.
+
+Therefore:
+- KEEP references to 120+ monitored/domestic corridors where they describe the broader platform scope.
+- Use 25 supported MVP corridors when referring to the currently implemented route dataset.
+- Do NOT replace every "120+" reference with "25".
+- Do NOT imply that only 25 corridors exist in the overall product.
+
+We also want a LIVE DEMO experience.
+
+"Live" may describe the application/demo experience and current system/demo status, but do NOT falsely claim access to real-time GDS, airline inventory, passenger demand, seat factor, or other unavailable live aviation feeds.
+
+KEEP:
+
+- Air Fare Index branding
+- aviation network visual/card
+- main title
+- subtitle
+- descriptive introduction
+- primary CTA
+- methodology CTA
+- four feature/value blocks
+- bottom summary cards
+- subtle grid background
+
+HOME COPY:
+
+Use:
+
+"Track observed domestic air fares, understand route-level price movements, and monitor India's aviation corridors."
+
+Four feature blocks:
+
+1. Air Fare Index Tracking
+"Measure route-level fare movements using observed domestic fare data."
+
+2. Route Intelligence
+"Inspect route prices, observations, airlines, and fare components."
+
+3. Fare Forecasting
+"View forward-looking fare estimates for supported domestic corridors."
+
+4. Fare Alerts & Anomalies
+"Identify unusual increases and decreases in observed fares."
+
+PRIMARY BUTTON:
+
+"Explore Air Fare Index →"
+
+SECONDARY BUTTON:
+
+"View Methodology & Data"
+
+NETWORK CARD:
+
+Keep the existing aviation network visualization.
+
+Heading:
+
+"Indian Airspace Flight Network"
+
+Status:
+
+"Live Demo"
+
+The visual can continue to show representative monitored corridors, but do not label it as a real-time airline/GDS topology unless actual live data is connected.
+
+A small supporting label may say:
+
+"120+ Corridors Monitored"
+
+BOTTOM SUMMARY CARDS:
+
+Keep the four-card structure.
+
+Use:
+
+1. ACTIVE CORRIDORS
+120+
+Domestic Corridors
+
+2. MVP ROUTES
+25
+Supported Corridors
+
+3. OBSERVATIONS
+125
+5 per MVP Route
+
+4. ROUTE WEIGHT
+4.0%
+Equal MVP Weight
+
+These should be presented as product/demo scope information rather than pretending they are dynamically calculated live statistics.
+
+IMPORTANT:
+
+The MVP observation design is:
+25 supported routes × 5 observations per route = 125 observations.
+
+The 5 observations should represent observations from different available sources where the dataset supports that distinction.
+
+Do not invent additional observation records.
+
+Do not introduce:
+- GDS yield
+- PNR counts
+- seat factor
+- capacity analysis
+- passenger demand
+- airline operational intelligence
+- unsupported ML metrics
+- confidence scores
+
+LIVE DEMO FEEL:
+
+Keep the interface feeling active and operational.
+
+It is acceptable to use labels such as:
+- Live Demo
+- Demo Status
+- Current Dataset
+- Updated Observation Set
+
+But do not claim that external aviation feeds are actually streaming in real time unless the backend genuinely provides that.
+
+VISUAL POLISH:
+
+- Preserve the existing deep green accent.
+- Preserve the pale grid background.
+- Preserve white cards with subtle borders.
+- Use restrained shadows.
+- Improve spacing and alignment.
+- Make the hero section feel premium and spacious.
+- Keep the aviation network visual prominent.
+- Make the 120+ / 25 / 125 distinction immediately understandable.
+- Avoid excessive animation, gradients, glassmorphism, or generic SaaS styling.
+
+Do not redesign the entire application.
+
+After completion:
+1. Run the frontend build.
+2. Fix any TypeScript/build errors.
+3. Verify Preview.
+4. Report exactly which Home-page files were changed.
+
+Do not modify other pages in this pass.
