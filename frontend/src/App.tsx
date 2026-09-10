@@ -3,11 +3,177 @@ import { FareDisplay } from './FareDisplay';
 
 export type PageView = 'welcome' | 'overview' | 'route-analytics' | 'fare-forecast' | 'alerts' | 'methodology';
 
+const MVP_ROUTES = [
+  'DEL-BOM', 'DEL-BLR', 'DEL-HYD', 'DEL-CCU', 'DEL-MAA',
+  'DEL-AMD', 'DEL-PNQ', 'DEL-GOI', 'DEL-COK', 'DEL-GAU',
+  'BOM-BLR', 'BOM-HYD', 'BOM-MAA', 'BOM-CCU', 'BOM-AMD',
+  'BOM-GOI', 'BLR-HYD', 'BLR-MAA', 'BLR-CCU', 'BLR-GOI',
+  'BLR-COK', 'HYD-MAA', 'HYD-CCU', 'CCU-GAU', 'MAA-COK',
+] as const;
+
+type MvpRoute = typeof MVP_ROUTES[number];
+
+type RouteObservation = {
+  observation_id: string;
+  collected_at: string | null;
+  travel_date: string | null;
+  origin: string;
+  destination: string;
+  route: MvpRoute;
+  airline: string | null;
+  flight_number: string | null;
+  departure_time: string | null;
+  fare_displayed: number | null;
+  currency: string;
+  fare_type: string | null;
+  source: string | null;
+  is_round_trip: boolean | null;
+  taxes: number | null;
+  total_fare: number | null;
+};
+
+const ROUTE_MEDIAN_FARES: Partial<Record<MvpRoute, number>> = {
+  'DEL-BLR': 6120,
+  'DEL-BOM': 5800,
+};
+
+const DEL_BLR_OBSERVATIONS: RouteObservation[] = [
+  {
+    observation_id: 'OBS-10921',
+    collected_at: '15 Nov 08:12',
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BLR',
+    route: 'DEL-BLR',
+    airline: 'Akasa Air',
+    flight_number: 'QP-1342',
+    departure_time: '07:28',
+    fare_displayed: 5100,
+    currency: 'INR',
+    fare_type: null,
+    source: 'Direct API',
+    is_round_trip: false,
+    taxes: 650,
+    total_fare: 5750,
+  },
+  {
+    observation_id: 'OBS-10922',
+    collected_at: '15 Nov 08:15',
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BLR',
+    route: 'DEL-BLR',
+    airline: 'IndiGo',
+    flight_number: '6E-2131',
+    departure_time: '09:45',
+    fare_displayed: 5250,
+    currency: 'INR',
+    fare_type: null,
+    source: 'GDS Aggregator',
+    is_round_trip: false,
+    taxes: 698,
+    total_fare: 5948,
+  },
+  {
+    observation_id: 'OBS-10923',
+    collected_at: '15 Nov 08:20',
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BLR',
+    route: 'DEL-BLR',
+    airline: 'IndiGo',
+    flight_number: '6E-5012',
+    departure_time: '14:18',
+    fare_displayed: 5380,
+    currency: 'INR',
+    fare_type: null,
+    source: 'GDS Aggregator',
+    is_round_trip: false,
+    taxes: 740,
+    total_fare: 6120,
+  },
+  {
+    observation_id: 'OBS-10924',
+    collected_at: null,
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BLR',
+    route: 'DEL-BLR',
+    airline: 'IndiGo',
+    flight_number: null,
+    departure_time: null,
+    fare_displayed: 6200,
+    currency: 'INR',
+    fare_type: null,
+    source: null,
+    is_round_trip: null,
+    taxes: null,
+    total_fare: null,
+  },
+  {
+    observation_id: 'OBS-10925',
+    collected_at: null,
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BLR',
+    route: 'DEL-BLR',
+    airline: 'Air India',
+    flight_number: null,
+    departure_time: null,
+    fare_displayed: 6800,
+    currency: 'INR',
+    fare_type: null,
+    source: null,
+    is_round_trip: null,
+    taxes: null,
+    total_fare: null,
+  },
+];
+
+function formatFare(value: number | null, currency = 'INR') {
+  if (value === null) return 'Not available';
+  if (currency === 'INR') return `₹${value.toLocaleString('en-IN')}`;
+  return `${currency} ${value.toLocaleString('en-IN')}`;
+}
+
+function RouteFareBreakdown({
+  fareDisplayed,
+  taxes,
+  totalFare,
+  currency,
+}: {
+  fareDisplayed: number | null;
+  taxes: number | null;
+  totalFare: number | null;
+  currency: string;
+}) {
+  if (fareDisplayed === null) {
+    return <span className="text-[11px] italic text-slate-400/80">Not available</span>;
+  }
+
+  return (
+    <details className="relative">
+      <summary className="list-none cursor-pointer font-semibold text-slate-900">
+        {formatFare(fareDisplayed, currency)} <span className="text-[10px] font-normal text-slate-500">+ taxes ⓘ</span>
+      </summary>
+      <div className="absolute left-0 top-6 z-20 w-56 rounded-lg bg-slate-900 p-3 text-[10px] text-white shadow-xl">
+        <div className="flex justify-between"><span className="text-slate-400">Fare Displayed</span><span>{formatFare(fareDisplayed, currency)}</span></div>
+        <div className="flex justify-between mt-1"><span className="text-slate-400">Taxes &amp; Fees</span><span>{formatFare(taxes, currency)}</span></div>
+        <div className="flex justify-between mt-2 border-t border-slate-700 pt-2 font-semibold"><span>Total Fare</span><span>{formatFare(totalFare, currency)}</span></div>
+      </div>
+    </details>
+  );
+}
+
 export function App() {
   const [activeTab, setActiveTab] = useState<PageView>('welcome');
-  const [selectedRoute, setSelectedRoute] = useState<string>('DEL-BLR');
+  const [selectedRoute, setSelectedRoute] = useState<MvpRoute>('DEL-BLR');
 
   const isLanding = activeTab === 'welcome';
+  const selectedRouteIndex = MVP_ROUTES.indexOf(selectedRoute) + 1;
+  const selectedRouteFare = ROUTE_MEDIAN_FARES[selectedRoute] ?? null;
+  const selectedRouteObservations = selectedRoute === 'DEL-BLR' ? DEL_BLR_OBSERVATIONS : [];
+  const [selectedOrigin, selectedDestination] = selectedRoute.split('-');
 
   return (
     <div className="w-screen h-screen bg-grid-lines flex flex-col overflow-hidden font-sans">
@@ -428,93 +594,115 @@ export function App() {
           {/* PAGE 3: ROUTE ANALYTICS */}
           {activeTab === 'route-analytics' && (
             <div className="space-y-6">
-              <div className="flex justify-between items-center border-b border-slate-200/60 pb-4">
+              <div className="flex justify-between items-start border-b border-slate-200/60 pb-5">
                 <div>
-                  <h2 className="text-2xl font-bold text-slate-900">Route Analytics <span className="text-xs font-normal bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded ml-2">MVP Corridor Desk</span></h2>
-                  <p className="text-xs text-slate-500 mt-0.5">Analyze fare movements, underlying observation samples, and calculated route price indices.</p>
+                  <h2 className="text-2xl font-bold text-slate-900">Route Analytics</h2>
+                  <p className="text-xs text-slate-500 mt-1">Inspect observed fares, route-level pricing, and observation telemetry across supported domestic corridors.</p>
                 </div>
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#32533D] bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 shrink-0">
+                  <span className="text-emerald-600">●</span> Live Demo Active
+                </span>
               </div>
 
               <div className="bg-white p-4 rounded-xl border border-slate-200/80 flex items-center justify-between shadow-2xs">
                 <div className="flex items-center gap-4">
-                  <span className="text-xs font-bold text-slate-400 uppercase">Select Corridor:</span>
-                  <select value={selectedRoute} onChange={(e) => setSelectedRoute(e.target.value)} className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-800">
-                    <option value="DEL-BLR">DEL-BLR (Delhi ⇄ Bengaluru)</option>
-                    <option value="DEL-BOM">DEL-BOM (Delhi ⇄ Mumbai)</option>
-                    <option value="BOM-GOI">BOM-GOI (Mumbai ⇄ Goa)</option>
+                  <label htmlFor="route-selector" className="text-xs font-bold text-slate-400 uppercase">Select Route:</label>
+                  <select id="route-selector" value={selectedRoute} onChange={(e) => setSelectedRoute(e.target.value as MvpRoute)} className="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-800 focus:outline-none focus:border-[#32533D]">
+                    {MVP_ROUTES.map((route) => <option key={route} value={route}>{route}</option>)}
                   </select>
                 </div>
-                <span className="text-xs text-slate-500">Corridor 2 of 25 in MVP Set</span>
+                <span className="text-xs text-slate-500">MVP route {selectedRouteIndex} of 25</span>
               </div>
 
-              <div className="grid grid-cols-3 gap-6">
+              <div className="grid grid-cols-4 gap-4">
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
-                  <span className="text-[10px] font-bold uppercase text-slate-400">MEDIAN ROUTE PRICE</span>
-                  <div className="text-3xl font-extrabold text-slate-900">₹6,120 <span className="text-xs font-normal text-slate-400">INR</span></div>
-                  <p className="text-xs text-slate-500">Calculated from 5 route observations.</p>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">ROUTE</span>
+                  <div className="text-2xl font-extrabold text-slate-900 font-mono">{selectedRoute}</div>
+                  <p className="text-xs text-slate-500">{selectedOrigin} <span className="text-slate-300">→</span> {selectedDestination}</p>
                 </div>
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
-                  <span className="text-[10px] font-bold uppercase text-slate-400">MVP ROUTE WEIGHT</span>
-                  <div className="text-3xl font-extrabold text-slate-900">4.0% <span className="text-xs font-normal text-slate-400">(1 / 25)</span></div>
-                  <p className="text-xs text-slate-500">Equal corridor weighting across MVP scope.</p>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">OBSERVATION COUNT</span>
+                  <div className="text-2xl font-extrabold text-slate-900">5</div>
+                  <p className="text-xs text-slate-500">5 observations for the MVP route</p>
                 </div>
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
-                  <span className="text-[10px] font-bold uppercase text-slate-400">OBSERVATION TELEMETRY</span>
-                  <div className="text-3xl font-extrabold text-emerald-700">5 of 5 Collected</div>
-                  <p className="text-xs text-slate-500">Min: ₹5,750 • Max: ₹6,490</p>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MEDIAN ROUTE FARE</span>
+                  <div className="text-2xl font-extrabold text-slate-900">
+                    <RouteFareBreakdown fareDisplayed={selectedRouteFare} taxes={null} totalFare={null} currency="INR" />
+                  </div>
+                  <p className="text-xs text-slate-500">Median route price where available</p>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MVP ROUTE WEIGHT</span>
+                  <div className="text-2xl font-extrabold text-slate-900">4.0%</div>
+                  <p className="text-xs text-slate-500">Equal weighting · 1 / 25 routes</p>
                 </div>
               </div>
 
-              <div className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-xs">
-                <div className="p-4 border-b border-slate-100 bg-slate-50/50 font-bold text-xs text-slate-800">
-                  Route Fare Observations (Sample Set N=5) — Verified GDS / Direct API
+              <div className="bg-[#f7f8fb] rounded-2xl border border-dashed border-indigo-200 p-4 flex items-center gap-4">
+                <div className="w-9 h-9 rounded-xl bg-white border border-indigo-100 flex items-center justify-center text-indigo-500 shrink-0">↗</div>
+                <div>
+                  <div className="text-xs font-bold text-slate-800">How this route contributes to the index</div>
+                  <p className="text-[11px] text-slate-500 mt-1">5 observations <span className="text-indigo-400 mx-1">→</span> median route price <span className="text-indigo-400 mx-1">→</span> 4.0% MVP route weight</p>
                 </div>
-                <table className="w-full text-left border-collapse text-xs">
-                  <thead>
-                    <tr className="border-b border-slate-200/60 text-slate-400 bg-slate-50">
-                      <th className="p-3">Obs ID</th>
-                      <th className="p-3">Collected At</th>
-                      <th className="p-3">Airline & Flight</th>
-                      <th className="p-3">Dept Time</th>
-                      <th className="p-3">Fare Displayed</th>
-                      <th className="p-3">Taxes & Fees</th>
-                      <th className="p-3">Total Fare</th>
-                      <th className="p-3">Source</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 text-slate-700">
-                    <tr>
-                      <td className="p-3 font-mono font-medium">OBS-10921</td>
-                      <td className="p-3 text-slate-400">15 Nov 08:12</td>
-                      <td className="p-3 font-medium">Akasa Air QP-1342</td>
-                      <td className="p-3">07:28</td>
-                      <td className="p-3">₹5,100</td>
-                      <td className="p-3">₹650</td>
-                      <td className="p-3 font-bold text-slate-900"><FareDisplay amount={5100} taxes={650} /></td>
-                      <td className="p-3 text-emerald-700 font-medium">Direct API</td>
-                    </tr>
-                    <tr>
-                      <td className="p-3 font-mono font-medium">OBS-10922</td>
-                      <td className="p-3 text-slate-400">15 Nov 08:15</td>
-                      <td className="p-3 font-medium">IndiGo 6E-2131</td>
-                      <td className="p-3">09:45</td>
-                      <td className="p-3">₹5,250</td>
-                      <td className="p-3">₹698</td>
-                      <td className="p-3 font-bold text-slate-900"><FareDisplay amount={5250} taxes={698} /></td>
-                      <td className="p-3 text-blue-700 font-medium">GDS Aggregator</td>
-                    </tr>
-                    <tr className="bg-emerald-50/40">
-                      <td className="p-3 font-mono font-medium">OBS-10923</td>
-                      <td className="p-3 text-slate-400">15 Nov 08:20</td>
-                      <td className="p-3 font-medium">IndiGo 6E-5012</td>
-                      <td className="p-3">14:18</td>
-                      <td className="p-3">₹5,380</td>
-                      <td className="p-3">₹740</td>
-                      <td className="p-3 font-bold text-slate-900"><FareDisplay amount={5380} taxes={740} /></td>
-                      <td className="p-3 text-emerald-800 font-medium">GDS Aggregator (Median)</td>
-                    </tr>
-                  </tbody>
-                </table>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+                <div className="p-5 border-b border-slate-100 flex items-start justify-between gap-4">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">OBSERVATION TELEMETRY</span>
+                    <h3 className="text-base font-bold text-slate-900 mt-1">Observation Telemetry</h3>
+                    <p className="text-[11px] text-slate-500 mt-1">5 observations · 5 / 5 route observations available</p>
+                  </div>
+                  <span className="text-[10px] font-semibold text-[#32533D] bg-emerald-50 border border-emerald-100 px-2.5 py-1.5 rounded-lg">MVP sample set</span>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[1160px] text-left border-collapse text-xs">
+                    <caption className="sr-only">Observation-level fare data for {selectedRoute}</caption>
+                    <thead>
+                      <tr className="border-b border-slate-200/60 text-[10px] uppercase tracking-wider text-slate-400 bg-slate-50">
+                        <th className="px-4 py-3 font-bold">Observation ID</th>
+                        <th className="px-4 py-3 font-bold">Collected At</th>
+                        <th className="px-4 py-3 font-bold">Travel Date</th>
+                        <th className="px-4 py-3 font-bold">Airline</th>
+                        <th className="px-4 py-3 font-bold">Flight</th>
+                        <th className="px-4 py-3 font-bold">Departure</th>
+                        <th className="px-4 py-3 font-bold">Fare</th>
+                        <th className="px-4 py-3 font-bold">Fare Type</th>
+                        <th className="px-4 py-3 font-bold">Source</th>
+                        <th className="px-4 py-3 font-bold">Round Trip</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-700">
+                      {selectedRouteObservations.length > 0 ? selectedRouteObservations.map((observation, index) => (
+                        <tr key={observation.observation_id} className={index === 2 ? 'bg-emerald-50/40' : 'hover:bg-slate-50/70'}>
+                          <td className="px-4 py-3">
+                            <div className="font-mono font-semibold text-slate-900">{observation.observation_id}</div>
+                            <div className="text-[10px] text-slate-400 mt-1">{observation.origin} <span className="text-slate-300">→</span> {observation.destination}</div>
+                          </td>
+                          <td className="px-4 py-3 text-slate-500">{observation.collected_at ?? 'Not available'}</td>
+                          <td className="px-4 py-3 text-slate-500">{observation.travel_date ?? 'Not available'}</td>
+                          <td className="px-4 py-3 font-medium text-slate-800">{observation.airline ?? 'Not available'}</td>
+                          <td className="px-4 py-3 font-mono text-slate-600">{observation.flight_number ?? 'Not available'}</td>
+                          <td className="px-4 py-3 text-slate-600">{observation.departure_time ?? 'Not available'}</td>
+                          <td className="px-4 py-3"><RouteFareBreakdown fareDisplayed={observation.fare_displayed} taxes={observation.taxes} totalFare={observation.total_fare} currency={observation.currency} /></td>
+                          <td className="px-4 py-3 text-slate-500">{observation.fare_type ?? 'Not available'}</td>
+                          <td className="px-4 py-3">
+                            <span className={observation.source ? 'font-medium text-emerald-700' : 'italic text-slate-400'}>{observation.source ?? 'Not available'}</span>
+                          </td>
+                          <td className="px-4 py-3 text-slate-600">{observation.is_round_trip === true ? 'Round trip' : observation.is_round_trip === false ? 'One-way' : 'Not available'}</td>
+                        </tr>
+                      )) : (
+                        <tr>
+                          <td colSpan={10} className="px-6 py-12 text-center">
+                            <div className="text-sm font-semibold text-slate-700">Observation rows are not available for {selectedRoute} in the current demo set.</div>
+                            <div className="text-xs text-slate-400 mt-1">The route remains part of the 25-route MVP basket and is ready for observation-level data.</div>
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           )}
