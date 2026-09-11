@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { FareDisplay } from './FareDisplay';
 
 export type PageView = 'welcome' | 'overview' | 'route-analytics' | 'fare-forecast' | 'alerts' | 'methodology';
 
@@ -789,40 +788,200 @@ export function App() {
           )}
 
           {/* PAGE 4: FARE FORECAST */}
-          {activeTab === 'fare-forecast' && (
+          {activeTab === 'fare-forecast' && (() => {
+            const obs = DEL_BLR_OBSERVATIONS.filter(o => o.fare_displayed !== null);
+            const obsFares = obs.map(o => o.fare_displayed!);
+            const sortedFares = obsFares.slice().sort((a, b) => a - b);
+            const recentFare = ROUTE_MEDIAN_FARES['DEL-BLR'] ?? (sortedFares.length > 0 ? sortedFares[Math.floor(sortedFares.length / 2)] : null);
+            const forecastFare = recentFare !== null ? Math.round(recentFare * 1.05) : null;
+            const obsTaxes = obs.map(o => o.taxes).filter((t): t is number => t !== null);
+            const forecastTaxes = obsTaxes.length > 0 ? obsTaxes.slice().sort((a, b) => a - b)[Math.floor(obsTaxes.length / 2)] : null;
+            const forecastTotal = forecastFare !== null && forecastTaxes !== null ? forecastFare + forecastTaxes : null;
+
+            // Chart data — use existing observed fares in collection order
+            const chartObs = obsFares;
+            const chartFc = forecastFare !== null ? [forecastFare, Math.round(forecastFare * 1.03), Math.round(forecastFare * 1.06)] : [];
+            const allVals = [...chartObs, ...chartFc];
+            const hasData = allVals.length > 0;
+            const minV = hasData ? Math.min(...allVals) : 0;
+            const maxV = hasData ? Math.max(...allVals) : 100;
+            const pad = hasData ? (maxV - minV) * 0.15 || 50 : 50;
+            const lo = minV - pad;
+            const hi = maxV + pad;
+            const rng = hi - lo || 1;
+
+            const SW = 560, SH = 240, PL = 70, PR = 30, PT = 25, PB = 50;
+            const pw = SW - PL - PR;
+            const ph = SH - PT - PB;
+            const totalPts = allVals.length;
+            const xStep = totalPts > 1 ? pw / (totalPts - 1) : 0;
+            const toX = (i: number) => PL + i * xStep;
+            const toY = (v: number) => PT + ph - ((v - lo) / rng) * ph;
+
+            const obsPath = chartObs.length > 0
+              ? chartObs.map((v, i) => `${i === 0 ? 'M' : 'L'} ${toX(i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')
+              : '';
+            const fcStart = chartObs.length > 0 ? chartObs.length - 1 : 0;
+            const fcPath = chartFc.length > 0 && chartObs.length > 0
+              ? chartFc.map((v, i) => `${i === 0 ? 'M' : 'L'} ${toX(fcStart + i).toFixed(1)},${toY(v).toFixed(1)}`).join(' ')
+              : '';
+
+            const yTicks = hasData ? [lo, lo + rng * 0.33, lo + rng * 0.66, hi] : [0, 25, 50, 100];
+            const xLabels = [
+              ...chartObs.map((_, i) => `Obs ${i + 1}`),
+              ...chartFc.map((_, i) => `T+${i + 1}`),
+            ];
+
+            return (
             <div className="space-y-6">
-              <div className="border-b border-slate-200/60 pb-4">
-                <h2 className="text-2xl font-bold text-slate-900">Fare Forecast</h2>
-                <p className="text-xs text-slate-500 mt-0.5">Forward-looking fare estimates and trajectory projections across supported domestic corridors.</p>
+              {/* Header */}
+              <div className="flex justify-between items-start border-b border-slate-200/60 pb-5">
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Fare Forecast</h2>
+                  <p className="text-xs text-slate-500 mt-1">Forward-looking fare estimates for supported domestic corridors.</p>
+                </div>
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#32533D] bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 shrink-0">
+                  <span className="text-emerald-600">●</span> Live Demo Active
+                </span>
               </div>
 
+              {/* Forecast + Observed cards */}
               <div className="grid grid-cols-2 gap-6">
                 <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
-                  <span className="text-[11px] font-bold uppercase text-slate-400">FORECAST FARE ({selectedRoute}) • T+5 Target</span>
-                  <div className="text-4xl font-extrabold text-slate-900"><FareDisplay amount={5380} taxes={820} /></div>
-                  <p className="text-xs text-slate-500">Forward expected base retail fare median across sampled airlines.</p>
+                  <span className="text-[11px] font-bold uppercase text-slate-400">FORECAST FARE (DEL-BLR)</span>
+                  {forecastFare !== null ? (
+                    <>
+                      <div className="text-4xl font-extrabold text-slate-900">
+                        <RouteFareBreakdown fareDisplayed={forecastFare} taxes={forecastTaxes} totalFare={forecastTotal} currency="INR" />
+                      </div>
+                      <div className="flex items-center gap-6 pt-1">
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">EXPECTED DIRECTION</span>
+                          <div className="text-sm font-bold mt-0.5 text-amber-600">↑ Upward</div>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">CHANGE VS RECENT</span>
+                          <div className="text-sm font-bold mt-0.5 text-slate-700">
+                            {recentFare !== null ? `+₹${(forecastFare - recentFare).toLocaleString('en-IN')} (+${(((forecastFare - recentFare) / recentFare) * 100).toFixed(1)}%)` : 'Not available'}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-2xl font-bold text-slate-400 italic">Not available</div>
+                  )}
+                  <p className="text-xs text-slate-500">Forward-looking fare estimate based on observed fare data.</p>
                 </div>
 
                 <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
-                  <span className="text-[11px] font-bold uppercase text-slate-400">CURRENT OBSERVED FARE (T-0)</span>
-                  <div className="text-4xl font-extrabold text-slate-900"><FareDisplay amount={5250} taxes={740} /></div>
-                  <p className="text-xs text-slate-500">Based on 5 sampled observations median.</p>
+                  <span className="text-[11px] font-bold uppercase text-slate-400">OBSERVED FARE CONTEXT (DEL-BLR)</span>
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+                      <span className="text-xs text-slate-500">Recent Observed Fare</span>
+                      <span className="text-sm font-bold text-slate-900">{formatFare(recentFare)}</span>
+                    </div>
+                    <div className="flex justify-between items-center border-b border-slate-100 pb-2">
+                      <span className="text-xs text-slate-500">Lowest Observed Fare</span>
+                      <span className="text-sm font-bold text-slate-900">{formatFare(sortedFares.length > 0 ? sortedFares[0] : null)}</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-xs text-slate-500">Highest Observed Fare</span>
+                      <span className="text-sm font-bold text-slate-900">{formatFare(sortedFares.length > 0 ? sortedFares[sortedFares.length - 1] : null)}</span>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-500">Based on {obs.length} observation(s) for this route.</p>
                 </div>
               </div>
 
+              {/* Chart */}
               <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
-                <h3 className="text-sm font-bold text-slate-900">{selectedRoute} — Fare Trajectory (Observed vs Forward Estimate)</h3>
-                <div className="h-40 w-full pt-2">
-                  <svg className="w-full h-full" viewBox="0 0 500 90" fill="none">
-                    <path d="M 0 60 Q 150 55, 300 40" stroke="#32533D" strokeWidth="2.5"/>
-                    <path d="M 300 40 Q 400 25, 500 15" stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="4 4"/>
-                    <circle cx="300" cy="40" r="4" fill="#0f172a"/>
-                    <text x="305" y="35" fill="#0f172a" fontSize="9" fontWeight="bold">T-0 Cutoff</text>
-                  </svg>
+                <div className="flex justify-between items-center">
+                  <h3 className="text-sm font-bold text-slate-900">DEL-BLR — Fare Movement (Observed vs Forecast)</h3>
+                  <div className="flex items-center gap-4 text-[10px]">
+                    <span className="flex items-center gap-1.5"><span className="w-3 h-0.5 bg-[#32533D] inline-block"></span> Observed</span>
+                    <span className="flex items-center gap-1.5"><span className="w-3 h-0 border-t border-dashed border-amber-500 inline-block"></span> Forecast</span>
+                  </div>
+                </div>
+                {hasData ? (
+                  <div className="w-full">
+                    <svg className="w-full" viewBox={`0 0 ${SW} ${SH}`} fill="none">
+                      {/* Y-axis label */}
+                      <text x={16} y={PT + ph / 2} textAnchor="middle" fill="#94a3b8" fontSize="10" fontWeight="600" transform={`rotate(-90 16 ${PT + ph / 2})`}>Fare (₹)</text>
+                      {/* Y-axis ticks */}
+                      {yTicks.map((tick, i) => (
+                        <g key={i}>
+                          <line x1={PL} y1={toY(tick)} x2={SW - PR} y2={toY(tick)} stroke="#f1f5f9" strokeWidth="1" />
+                          <text x={PL - 8} y={toY(tick) + 3} textAnchor="end" fill="#94a3b8" fontSize="9">₹{Math.round(tick).toLocaleString('en-IN')}</text>
+                        </g>
+                      ))}
+                      {/* T-0 boundary */}
+                      {chartObs.length > 0 && (
+                        <>
+                          <line x1={toX(chartObs.length - 1)} y1={PT} x2={toX(chartObs.length - 1)} y2={SH - PB} stroke="#cbd5e1" strokeWidth="1" strokeDasharray="4 4" />
+                          <text x={toX(chartObs.length - 1)} y={PT - 7} textAnchor="middle" fill="#64748b" fontSize="9" fontWeight="bold">T-0</text>
+                        </>
+                      )}
+                      {/* Observed line */}
+                      <path d={obsPath} stroke="#32533D" strokeWidth="2.5" fill="none" />
+                      {chartObs.map((v, i) => (
+                        <circle key={i} cx={toX(i)} cy={toY(v)} r="3.5" fill="#32533D" />
+                      ))}
+                      {/* Forecast line */}
+                      <path d={fcPath} stroke="#f59e0b" strokeWidth="2.5" strokeDasharray="5 4" fill="none" />
+                      {chartFc.map((v, i) => (
+                        <circle key={i} cx={toX(fcStart + i)} cy={toY(v)} r="3.5" fill="#f59e0b" />
+                      ))}
+                      {/* X-axis labels */}
+                      {xLabels.map((label, i) => (
+                        <text key={i} x={toX(i)} y={SH - PB + 16} textAnchor="middle" fill="#94a3b8" fontSize="9">{label}</text>
+                      ))}
+                      {/* Current observed annotation */}
+                      {chartObs.length > 0 && recentFare !== null && (
+                        <text x={toX(chartObs.length - 1)} y={toY(chartObs[chartObs.length - 1]) - 10} textAnchor="middle" fill="#32533D" fontSize="9" fontWeight="bold">₹{chartObs[chartObs.length - 1].toLocaleString('en-IN')}</text>
+                      )}
+                      {/* Forecast target annotation */}
+                      {chartFc.length > 0 && (
+                        <text x={toX(fcStart + chartFc.length - 1)} y={toY(chartFc[chartFc.length - 1]) - 10} textAnchor="middle" fill="#f59e0b" fontSize="9" fontWeight="bold">₹{chartFc[chartFc.length - 1].toLocaleString('en-IN')}</text>
+                      )}
+                    </svg>
+                  </div>
+                ) : (
+                  <div className="h-40 flex items-center justify-center">
+                    <div className="text-center">
+                      <div className="text-sm font-semibold text-slate-400">No observed fare data available for DEL-BLR</div>
+                      <div className="text-xs text-slate-400 mt-1">Forecast requires observation-level fare data for this route.</div>
+                    </div>
+                  </div>
+                )}
+                <p className="text-[11px] text-slate-400">Observed data reflects available fare observations. Forecast is a forward estimate from the recent observed fare.</p>
+              </div>
+
+              {/* Route Context */}
+              <div className="grid grid-cols-4 gap-4">
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">ROUTE</span>
+                  <div className="text-2xl font-extrabold text-slate-900 font-mono">DEL-BLR</div>
+                  <p className="text-xs text-slate-500">DEL → BLR</p>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">OBSERVATIONS</span>
+                  <div className="text-2xl font-extrabold text-slate-900">{obs.length}</div>
+                  <p className="text-xs text-slate-500">MVP route observations</p>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MVP ROUTE WEIGHT</span>
+                  <div className="text-2xl font-extrabold text-slate-900">4.0%</div>
+                  <p className="text-xs text-slate-500">Equal weighting · 1 / 25 routes</p>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">FORECAST HORIZON</span>
+                  <div className="text-2xl font-extrabold text-slate-900">T+3</div>
+                  <p className="text-xs text-slate-500">Forward estimate periods</p>
                 </div>
               </div>
             </div>
-          )}
+            );
+          })()}
 
           {/* PAGE 5: FARE ALERTS & ANOMALIES */}
           {activeTab === 'alerts' && (
