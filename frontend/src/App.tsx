@@ -371,7 +371,7 @@ export function App() {
 
           <div className="p-3 m-3 bg-white/90 rounded-xl border border-slate-200/80 text-xs shadow-xs">
             <div className="flex justify-between items-center mb-2 font-semibold text-slate-700">
-              <span>SUPPORTED MVP ROUTES</span>
+              <span>SAMPLE MVP ROUTES</span>
               <span className="text-[10px] text-slate-500 font-normal">25 Supported</span>
             </div>
             <div className="grid grid-cols-2 gap-1 font-mono text-[11px] text-slate-600">
@@ -937,7 +937,7 @@ export function App() {
                 <div className="w-9 h-9 rounded-xl bg-white border border-indigo-100 flex items-center justify-center text-indigo-500 shrink-0">ⓘ</div>
                 <div>
                   <div className="text-xs font-bold text-slate-800">How alerts are determined</div>
-                  <p className="text-[11px] text-slate-500 mt-1">Each observation's displayed fare is compared to the route-level median fare. Changes above 5% are flagged as fare increases or decreases. Smaller deviations are labelled as unusual fare movement.</p>
+                  <p className="text-[11px] text-slate-500 mt-1">Alerts are derived from changes in observed fares relative to recent comparable route-level observations. Alert thresholds will be applied according to the backend anomaly-detection methodology.</p>
                 </div>
               </div>
             </div>
