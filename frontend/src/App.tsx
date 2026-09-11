@@ -946,36 +946,103 @@ export function App() {
           {/* PAGE 6: METHODOLOGY */}
           {activeTab === 'methodology' && (
             <div className="space-y-6">
-              <div className="border-b border-slate-200/60 pb-4">
-                <span className="text-[10px] uppercase font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full">Spec v2.4 (Independent Aviation Analytics)</span>
-                <h2 className="text-2xl font-bold text-slate-900 mt-2">Air Fare Index Methodology & Data Sources</h2>
-                <p className="text-xs text-slate-500 mt-1">The Composite AFI provides an empirical, volume-weighted pricing barometer across India's domestic aviation network.</p>
+              {/* Header */}
+              <div className="border-b border-slate-200/60 pb-5">
+                <span className="text-[10px] uppercase font-bold text-emerald-800 bg-emerald-100 px-2.5 py-1 rounded-full">Live Demo Methodology</span>
+                <h2 className="text-2xl font-bold text-slate-900 mt-2">Air Fare Index Methodology & Data</h2>
+                <p className="text-xs text-slate-500 mt-1">How observed domestic air fares are collected, aggregated, and converted into the MVP Air Fare Index.</p>
               </div>
 
+              {/* Top Summary Cards */}
               <div className="grid grid-cols-4 gap-4">
-                <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase">Network Calibration</span>
-                  <div className="text-2xl font-bold text-slate-900 mt-1">120 <span className="text-xs font-normal text-slate-400">Segments</span></div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MVP INDEX BASKET</span>
+                  <div className="text-2xl font-extrabold text-slate-900">25 <span className="text-xs font-normal text-slate-400">Routes</span></div>
+                  <p className="text-xs text-slate-500">Supported domestic corridors</p>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase">Weekly Ingestion Mass</span>
-                  <div className="text-2xl font-bold text-slate-900 mt-1">1.48M <span className="text-xs font-normal text-slate-400">Seats</span></div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">OBSERVATIONS PER ROUTE</span>
+                  <div className="text-2xl font-extrabold text-slate-900">5</div>
+                  <p className="text-xs text-slate-500">Used to derive each route median</p>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase">Historical Baseline</span>
-                  <div className="text-2xl font-bold text-slate-900 mt-1">5 Years</div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MVP OBSERVATIONS</span>
+                  <div className="text-2xl font-extrabold text-slate-900">125</div>
+                  <p className="text-xs text-slate-500">25 routes × 5 observations</p>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
-                  <span className="text-[10px] text-slate-400 font-bold uppercase">Sampling Frequency</span>
-                  <div className="text-2xl font-bold text-slate-900 mt-1">12 min</div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">INITIAL ROUTE WEIGHT</span>
+                  <div className="text-2xl font-extrabold text-slate-900">4.0%</div>
+                  <p className="text-xs text-slate-500">Equal weight per MVP route</p>
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
-                <h3 className="font-bold text-sm text-slate-900">Composite AFI Index Calculation Engine</h3>
-                <p className="text-xs text-slate-600">A baseline of 100.00 was established using the rolling median of non-holiday fare filings across all 120 key domestic corridors.</p>
-                <div className="bg-slate-900 text-emerald-400 p-4 rounded-xl font-mono text-xs">
-                  AFI_t = 100 * [ Sum(w_i * (F_i,t / F_i,0)) ] / Sum(w_i)
+              {/* Methodology Pipeline */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                <h3 className="text-sm font-bold text-slate-900">How the MVP Air Fare Index is constructed</h3>
+                <div className="space-y-3">
+                  {[
+                    { n: '1', title: 'Collect Fare Observations', desc: 'Collect 5 fare observations for each supported MVP route.' },
+                    { n: '2', title: 'Calculate Route Median', desc: 'Calculate the median observed fare for each route to reduce the effect of individual extreme observations.' },
+                    { n: '3', title: 'Compare With Base Period', desc: "Compare each route's current median fare with its corresponding base-period route fare." },
+                    { n: '4', title: 'Apply Route Weights', desc: 'In the current MVP, each of the 25 routes receives an equal 4.0% weight.' },
+                    { n: '5', title: 'Calculate Composite AFI', desc: 'Aggregate the weighted route fare relatives into the Air Fare Index using a fixed-base Laspeyres-style approach.' },
+                  ].map((step) => (
+                    <div key={step.n} className="flex items-start gap-3">
+                      <div className="w-7 h-7 rounded-full bg-[#32533D] text-white text-xs font-bold flex items-center justify-center shrink-0">{step.n}</div>
+                      <div className="pt-0.5">
+                        <div className="text-xs font-bold text-slate-900">{step.title}</div>
+                        <p className="text-[11px] text-slate-500 mt-0.5">{step.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Index Formula */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                <h3 className="text-sm font-bold text-slate-900">Index Formula</h3>
+                <div className="bg-slate-900 text-emerald-400 p-4 rounded-xl font-mono text-sm text-center">
+                  AFI_t = 100 × Σ [ w_i × (P_i,t / P_i,0) ]
+                </div>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-xs text-slate-600">
+                  <div><span className="font-mono font-semibold text-slate-800">P_i,t</span> = median observed fare for route i in the current period</div>
+                  <div><span className="font-mono font-semibold text-slate-800">P_i,0</span> = base-period fare for route i</div>
+                  <div><span className="font-mono font-semibold text-slate-800">w_i</span> = route weight</div>
+                  <div><span className="font-mono font-semibold text-slate-800">Σw_i</span> = 1</div>
+                </div>
+                <p className="text-[11px] text-slate-500">In the MVP, w_i = 0.04 for each of the 25 supported routes.</p>
+              </div>
+
+              {/* Observation Data */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                <h3 className="text-sm font-bold text-slate-900">Observation Data</h3>
+                <p className="text-xs text-slate-500">Route-level medians are derived from collected fare observations. The production methodology will specify which fare field is used for index calculation once the backend methodology is finalized.</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {['observation_id','collected_at','travel_date','origin','destination','route','airline','flight_number','departure_time','fare_displayed','currency','fare_type','source','is_round_trip','taxes','total_fare'].map((field) => (
+                    <div key={field} className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-[11px] font-mono text-slate-700 text-center">{field}</div>
+                  ))}
+                </div>
+              </div>
+
+              {/* MVP Scope vs Broader Coverage */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#32533D]">MVP INDEX BASKET</span>
+                  <p className="text-xs text-slate-600">25 supported routes are currently used for the MVP index calculation.</p>
+                </div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">BROADER PLATFORM COVERAGE</span>
+                  <p className="text-xs text-slate-600">The platform may monitor 120+ domestic corridors as broader coverage expands. Broader monitored coverage must not be presented as part of the current 25-route MVP index basket.</p>
+                </div>
+              </div>
+
+              {/* Future Weighting */}
+              <div className="bg-[#f7f8fb] rounded-2xl border border-dashed border-indigo-200 p-4 flex items-start gap-4">
+                <div className="w-9 h-9 rounded-xl bg-white border border-indigo-100 flex items-center justify-center text-indigo-500 shrink-0">ⓘ</div>
+                <div>
+                  <div className="text-xs font-bold text-slate-800">Future Weighting</div>
+                  <p className="text-[11px] text-slate-500 mt-1">The MVP begins with equal route weights of 4.0%. A future production methodology may replace equal weighting with passenger-traffic-based route weights when a validated traffic dataset is integrated.</p>
                 </div>
               </div>
             </div>
