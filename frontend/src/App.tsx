@@ -130,6 +130,87 @@ const DEL_BLR_OBSERVATIONS: RouteObservation[] = [
   },
 ];
 
+type FareAlert = {
+  route: MvpRoute;
+  observation_id: string;
+  collected_at: string | null;
+  airline: string | null;
+  flight_number: string | null;
+  fare_displayed: number | null;
+  taxes: number | null;
+  total_fare: number | null;
+  currency: string;
+  comparable_fare: number | null;
+  absolute_change: number | null;
+  percentage_change: number | null;
+  alert_type: 'Fare Increase' | 'Fare Decrease' | 'Unusual Fare Movement';
+};
+
+const DEL_BLR_MEDIAN = ROUTE_MEDIAN_FARES['DEL-BLR'] ?? null;
+
+const FARE_ALERTS: FareAlert[] = [
+  {
+    route: 'DEL-BLR',
+    observation_id: 'OBS-10925',
+    collected_at: null,
+    airline: 'Air India',
+    flight_number: null,
+    fare_displayed: 6800,
+    taxes: null,
+    total_fare: null,
+    currency: 'INR',
+    comparable_fare: DEL_BLR_MEDIAN,
+    absolute_change: DEL_BLR_MEDIAN !== null ? 6800 - DEL_BLR_MEDIAN : null,
+    percentage_change: DEL_BLR_MEDIAN !== null ? ((6800 - DEL_BLR_MEDIAN) / DEL_BLR_MEDIAN) * 100 : null,
+    alert_type: 'Fare Increase',
+  },
+  {
+    route: 'DEL-BLR',
+    observation_id: 'OBS-10921',
+    collected_at: '15 Nov 08:12',
+    airline: 'Akasa Air',
+    flight_number: 'QP-1342',
+    fare_displayed: 5100,
+    taxes: 650,
+    total_fare: 5750,
+    currency: 'INR',
+    comparable_fare: DEL_BLR_MEDIAN,
+    absolute_change: DEL_BLR_MEDIAN !== null ? 5100 - DEL_BLR_MEDIAN : null,
+    percentage_change: DEL_BLR_MEDIAN !== null ? ((5100 - DEL_BLR_MEDIAN) / DEL_BLR_MEDIAN) * 100 : null,
+    alert_type: 'Fare Decrease',
+  },
+  {
+    route: 'DEL-BLR',
+    observation_id: 'OBS-10922',
+    collected_at: '15 Nov 08:15',
+    airline: 'IndiGo',
+    flight_number: '6E-2131',
+    fare_displayed: 5250,
+    taxes: 698,
+    total_fare: 5948,
+    currency: 'INR',
+    comparable_fare: DEL_BLR_MEDIAN,
+    absolute_change: DEL_BLR_MEDIAN !== null ? 5250 - DEL_BLR_MEDIAN : null,
+    percentage_change: DEL_BLR_MEDIAN !== null ? ((5250 - DEL_BLR_MEDIAN) / DEL_BLR_MEDIAN) * 100 : null,
+    alert_type: 'Fare Decrease',
+  },
+  {
+    route: 'DEL-BLR',
+    observation_id: 'OBS-10923',
+    collected_at: '15 Nov 08:20',
+    airline: 'IndiGo',
+    flight_number: '6E-5012',
+    fare_displayed: 5380,
+    taxes: 740,
+    total_fare: 6120,
+    currency: 'INR',
+    comparable_fare: DEL_BLR_MEDIAN,
+    absolute_change: DEL_BLR_MEDIAN !== null ? 5380 - DEL_BLR_MEDIAN : null,
+    percentage_change: DEL_BLR_MEDIAN !== null ? ((5380 - DEL_BLR_MEDIAN) / DEL_BLR_MEDIAN) * 100 : null,
+    alert_type: 'Fare Decrease',
+  },
+];
+
 function formatFare(value: number | null, currency = 'INR') {
   if (value === null) return 'Not available';
   if (currency === 'INR') return `₹${value.toLocaleString('en-IN')}`;
@@ -200,7 +281,7 @@ export function App() {
             <button onClick={() => setActiveTab('overview')} className="px-3.5 py-1 rounded-full border border-dashed border-slate-300 hover:text-slate-900 transition">Overview & Indices</button>
             <button onClick={() => setActiveTab('route-analytics')} className="px-3.5 py-1 rounded-full border border-dashed border-slate-300 hover:text-slate-900 transition">Route Analytics</button>
             <button onClick={() => setActiveTab('fare-forecast')} className="px-3.5 py-1 rounded-full border border-dashed border-slate-300 hover:text-slate-900 transition">Fare Forecast</button>
-            <button onClick={() => setActiveTab('alerts')} className="px-3.5 py-1 rounded-full border border-dashed border-slate-300 hover:text-slate-900 transition">Alerts & Surges</button>
+            <button onClick={() => setActiveTab('alerts')} className="px-3.5 py-1 rounded-full border border-dashed border-slate-300 hover:text-slate-900 transition">Fare Alerts & Anomalies</button>
             <button onClick={() => setActiveTab('methodology')} className="px-3.5 py-1 rounded-full border border-dashed border-slate-300 hover:text-slate-900 transition">Methodology & Data</button>
           </div>
 
@@ -269,8 +350,8 @@ export function App() {
               onClick={() => setActiveTab('alerts')} 
               className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition ${activeTab === 'alerts' ? 'bg-[#32533D] text-white font-semibold shadow-sm' : 'hover:bg-slate-100'}`}
             >
-              <span>Alerts & Surges</span>
-              <span className="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded-full font-bold">4</span>
+              <span>Fare Alerts & Anomalies</span>
+              <span className="bg-amber-100 text-amber-800 text-[10px] px-1.5 py-0.5 rounded-full font-bold">{FARE_ALERTS.length}</span>
             </button>
             <button 
               onClick={() => setActiveTab('methodology')} 
@@ -743,42 +824,120 @@ export function App() {
             </div>
           )}
 
-          {/* PAGE 5: ALERTS & SURGES */}
+          {/* PAGE 5: FARE ALERTS & ANOMALIES */}
           {activeTab === 'alerts' && (
             <div className="space-y-6">
-              <div className="border-b border-slate-200/60 pb-4">
-                <h2 className="text-2xl font-bold text-slate-900">Domestic Fare Alerts & Surge Anomaly Tracker</h2>
-                <p className="text-xs text-slate-500 mt-0.5">Algorithmic early-warning system capturing non-linear yield movements and capacity shortfalls.</p>
+              {/* Header */}
+              <div className="flex justify-between items-start border-b border-slate-200/60 pb-5">
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900">Fare Alerts & Anomalies</h2>
+                  <p className="text-xs text-slate-500 mt-1">Monitor unusual movements in observed domestic air fares across supported corridors.</p>
+                </div>
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#32533D] bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200 shrink-0">
+                  <span className="text-emerald-600">●</span> Live Demo Active
+                </span>
               </div>
 
+              {/* Summary Cards */}
               <div className="grid grid-cols-4 gap-4">
-                <div className="bg-white p-4 rounded-xl border border-red-200 bg-red-50/20">
-                  <div className="text-red-700 font-bold text-2xl">4 <span className="text-xs font-normal text-slate-500">+2 vs yday</span></div>
-                  <div className="text-xs font-semibold text-slate-800 mt-1">Critical Surges</div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">ACTIVE FARE ALERTS</span>
+                  <div className="text-2xl font-extrabold text-slate-900">{FARE_ALERTS.length}</div>
+                  <p className="text-xs text-slate-500">Flagged observations</p>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-amber-200 bg-amber-50/20">
-                  <div className="text-amber-700 font-bold text-2xl">12 <span className="text-xs font-normal text-slate-500">+5 flagged</span></div>
-                  <div className="text-xs font-semibold text-slate-800 mt-1">Moderate Spikes</div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">ROUTES WITH UNUSUAL MOVEMENT</span>
+                  <div className="text-2xl font-extrabold text-slate-900">{new Set(FARE_ALERTS.map(a => a.route)).size}</div>
+                  <p className="text-xs text-slate-500">MVP corridors affected</p>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-emerald-200 bg-emerald-50/20">
-                  <div className="text-emerald-700 font-bold text-2xl">9 <span className="text-xs font-normal text-slate-500">-18% spread</span></div>
-                  <div className="text-xs font-semibold text-slate-800 mt-1">Compression Ops</div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">LARGEST OBSERVED INCREASE</span>
+                  <div className="text-2xl font-extrabold text-amber-600">
+                    {FARE_ALERTS.filter(a => a.absolute_change !== null && a.absolute_change > 0).length > 0
+                      ? `+₹${Math.max(...FARE_ALERTS.filter(a => a.absolute_change !== null && a.absolute_change > 0).map(a => a.absolute_change!)).toLocaleString('en-IN')}`
+                      : 'Not available'}
+                  </div>
+                  <p className="text-xs text-slate-500">Vs comparable fare</p>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-blue-200 bg-blue-50/20">
-                  <div className="text-blue-700 font-bold text-2xl">98.4% <span className="text-xs font-normal text-slate-500">1,817 safe</span></div>
-                  <div className="text-xs font-semibold text-slate-800 mt-1">Monitored Normal</div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">LARGEST OBSERVED DECREASE</span>
+                  <div className="text-2xl font-extrabold text-emerald-600">
+                    {FARE_ALERTS.filter(a => a.absolute_change !== null && a.absolute_change < 0).length > 0
+                      ? `-₹${Math.abs(Math.min(...FARE_ALERTS.filter(a => a.absolute_change !== null && a.absolute_change < 0).map(a => a.absolute_change!))).toLocaleString('en-IN')}`
+                      : 'Not available'}
+                  </div>
+                  <p className="text-xs text-slate-500">Vs comparable fare</p>
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
-                <div className="flex justify-between items-center border-b border-slate-100 pb-3">
-                  <span className="font-bold text-sm text-slate-800">🔴 Critical Surge Detected: DEL → PAT (Patna)</span>
-                  <span className="text-xs bg-red-100 text-red-800 px-2.5 py-1 rounded-md font-semibold">+112% Yield Surge</span>
+              {/* Alerts Table */}
+              <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+                <div className="p-5 border-b border-slate-100">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">OBSERVATION-LEVEL ALERTS</span>
+                  <h3 className="text-base font-bold text-slate-900 mt-1">Fare Alerts & Anomalies</h3>
+                  <p className="text-[11px] text-slate-500 mt-1">Derived from observed fare data compared to route-level median fares.</p>
                 </div>
-                <div className="grid grid-cols-3 text-xs gap-4 text-slate-600">
-                  <div><span className="font-semibold text-slate-700">Underlying Catalyst:</span> Diwali / Chhath Rush Capacity Squeeze</div>
-                  <div><span className="font-semibold text-slate-700">Direct Trigger Metric:</span> Aggregate Seat Factor &gt;97.2%</div>
-                  <div><span className="font-semibold text-slate-700">Primary Carriers Affected:</span> IndiGo (6E 2132), SpiceJet (SG 0721)</div>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[1100px] text-left border-collapse text-xs">
+                    <thead>
+                      <tr className="border-b border-slate-200/60 text-[10px] uppercase tracking-wider text-slate-400 bg-slate-50">
+                        <th className="px-4 py-3 font-bold">Route</th>
+                        <th className="px-4 py-3 font-bold">Observation Date/Time</th>
+                        <th className="px-4 py-3 font-bold">Airline</th>
+                        <th className="px-4 py-3 font-bold">Flight</th>
+                        <th className="px-4 py-3 font-bold">Observed Fare</th>
+                        <th className="px-4 py-3 font-bold">Comparable Fare</th>
+                        <th className="px-4 py-3 font-bold">Absolute Change</th>
+                        <th className="px-4 py-3 font-bold">% Change</th>
+                        <th className="px-4 py-3 font-bold">Alert Type</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100 text-slate-700">
+                      {FARE_ALERTS.map((alert) => (
+                        <tr key={alert.observation_id} className="hover:bg-slate-50/70">
+                          <td className="px-4 py-3 font-mono font-semibold text-slate-900">{alert.route}</td>
+                          <td className="px-4 py-3 text-slate-500">{alert.collected_at ?? 'Not available'}</td>
+                          <td className="px-4 py-3 font-medium text-slate-800">{alert.airline ?? 'Not available'}</td>
+                          <td className="px-4 py-3 font-mono text-slate-600">{alert.flight_number ?? 'Not available'}</td>
+                          <td className="px-4 py-3">
+                            <RouteFareBreakdown fareDisplayed={alert.fare_displayed} taxes={alert.taxes} totalFare={alert.total_fare} currency={alert.currency} />
+                          </td>
+                          <td className="px-4 py-3 text-slate-600 font-medium">{formatFare(alert.comparable_fare)}</td>
+                          <td className="px-4 py-3 font-semibold">
+                            {alert.absolute_change !== null
+                              ? <span className={alert.absolute_change > 0 ? 'text-amber-600' : 'text-emerald-600'}>
+                                  {alert.absolute_change > 0 ? '+' : ''}₹{alert.absolute_change.toLocaleString('en-IN')}
+                                </span>
+                              : <span className="text-slate-400 italic text-[11px]">Not available</span>}
+                          </td>
+                          <td className="px-4 py-3 font-semibold">
+                            {alert.percentage_change !== null
+                              ? <span className={alert.percentage_change > 0 ? 'text-amber-600' : 'text-emerald-600'}>
+                                  {alert.percentage_change > 0 ? '+' : ''}{alert.percentage_change.toFixed(1)}%
+                                </span>
+                              : <span className="text-slate-400 italic text-[11px]">Not available</span>}
+                          </td>
+                          <td className="px-4 py-3">
+                            <span className={`text-[10px] font-bold px-2.5 py-1 rounded-md ${
+                              alert.alert_type === 'Fare Increase' ? 'bg-amber-100 text-amber-800' :
+                              alert.alert_type === 'Fare Decrease' ? 'bg-emerald-100 text-emerald-800' :
+                              'bg-slate-100 text-slate-700'}`}>
+                              {alert.alert_type}
+                            </span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Context Panel */}
+              <div className="bg-[#f7f8fb] rounded-2xl border border-dashed border-indigo-200 p-4 flex items-center gap-4">
+                <div className="w-9 h-9 rounded-xl bg-white border border-indigo-100 flex items-center justify-center text-indigo-500 shrink-0">ⓘ</div>
+                <div>
+                  <div className="text-xs font-bold text-slate-800">How alerts are determined</div>
+                  <p className="text-[11px] text-slate-500 mt-1">Each observation's displayed fare is compared to the route-level median fare. Changes above 5% are flagged as fare increases or decreases. Smaller deviations are labelled as unusual fare movement.</p>
                 </div>
               </div>
             </div>
