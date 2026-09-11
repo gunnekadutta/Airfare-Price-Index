@@ -1,24 +1,14 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 
 router = APIRouter()
 
 
-@router.get("/current")
-def current_index():
-    return {
-        "index": 100.0,
-        "status": "demo"
-    }
-
-
-@router.get("/history")
-def index_history():
-    return []
-
-
-@router.get("/change")
-def index_change():
-    return {
-        "mom": 0.0,
-        "yoy": 0.0
-    }
+@router.get("/index")
+def get_index(
+    origin: str | None = None,
+    destination: str | None = None,
+):
+    raise HTTPException(
+        status_code=501,
+        detail="Index engine has not yet been integrated",
+    )
