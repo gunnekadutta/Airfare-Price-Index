@@ -655,14 +655,7 @@ export function App() {
                         <tr>
                           <td className="px-5 py-3 font-mono font-semibold text-slate-900">DEL-BOM</td>
                           <td className="px-4 py-3">
-                            <details className="relative">
-                              <summary className="list-none cursor-pointer font-semibold text-slate-900">₹5,800 <span className="text-[10px] font-normal text-slate-500">+ taxes ⓘ</span></summary>
-                              <div className="absolute left-0 top-6 z-20 w-52 rounded-lg bg-slate-900 p-3 text-[10px] text-white shadow-xl">
-                                <div className="flex justify-between"><span className="text-slate-400">Fare Displayed</span><span>₹5,800</span></div>
-                                <div className="flex justify-between mt-1"><span className="text-slate-400">Taxes &amp; Fees</span><span>Not available</span></div>
-                                <div className="flex justify-between mt-2 border-t border-slate-700 pt-2 font-semibold"><span>Total Fare</span><span>Not available</span></div>
-                              </div>
-                            </details>
+                            <RouteFareBreakdown fareDisplayed={ROUTE_MEDIAN_FARES['DEL-BOM'] ?? null} taxes={null} totalFare={null} currency="INR" />
                           </td>
                           <td className="px-4 py-3 text-slate-500">5</td>
                           <td className="px-5 py-3 text-right font-semibold">4.0%</td>
@@ -670,14 +663,7 @@ export function App() {
                         <tr>
                           <td className="px-5 py-3 font-mono font-semibold text-slate-900">DEL-BLR</td>
                           <td className="px-4 py-3">
-                            <details className="relative">
-                              <summary className="list-none cursor-pointer font-semibold text-slate-900">₹6,120 <span className="text-[10px] font-normal text-slate-500">+ taxes ⓘ</span></summary>
-                              <div className="absolute left-0 top-6 z-20 w-52 rounded-lg bg-slate-900 p-3 text-[10px] text-white shadow-xl">
-                                <div className="flex justify-between"><span className="text-slate-400">Fare Displayed</span><span>₹6,120</span></div>
-                                <div className="flex justify-between mt-1"><span className="text-slate-400">Taxes &amp; Fees</span><span>Not available</span></div>
-                                <div className="flex justify-between mt-2 border-t border-slate-700 pt-2 font-semibold"><span>Total Fare</span><span>Not available</span></div>
-                              </div>
-                            </details>
+                            <RouteFareBreakdown fareDisplayed={ROUTE_MEDIAN_FARES['DEL-BLR'] ?? null} taxes={null} totalFare={null} currency="INR" />
                           </td>
                           <td className="px-4 py-3 text-slate-500">5</td>
                           <td className="px-5 py-3 text-right font-semibold">4.0%</td>
