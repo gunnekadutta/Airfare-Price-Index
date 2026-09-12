@@ -298,7 +298,8 @@ export function App() {
       {/* WORKSPACE AREA (LEFT SIDEBAR + MAIN CONTENT) */}
       <div className="flex-1 flex overflow-hidden">
         
-        {/* LEFT SIDEBAR — ACTIVE FOR ALL DASHBOARD PAGES */}
+        {/* LEFT SIDEBAR — ACTIVE FOR ALL DASHBOARD PAGES (hidden on Home) */}
+        {!isLanding && (
         <aside className="w-64 bg-white/80 backdrop-blur-md border-r border-slate-200/80 flex flex-col shrink-0">
           {!isLanding && (
             <div className="p-4 border-b border-slate-200/60 flex items-center gap-3">
@@ -380,13 +381,15 @@ export function App() {
             </div>
           </div>
         </aside>
+        )}
 
         {/* MAIN CONTENT WORKSPACE */}
         <main className="flex-1 p-8 overflow-y-auto">
           
           {/* PAGE 1: WELCOME / LANDING */}
           {activeTab === 'welcome' && (
-            <div className="grid grid-cols-12 gap-10 items-start">
+            <div className="space-y-8">
+              <div className="grid grid-cols-12 gap-10 items-start">
               <div className="col-span-7 space-y-7">
                 <div>
                   <span className="text-[11px] font-semibold text-slate-600 bg-slate-200/60 px-3 py-1 rounded-full border border-slate-300/50">
@@ -431,7 +434,7 @@ export function App() {
 
                 <div className="grid grid-cols-4 gap-3 pt-5 border-t border-slate-200/80">
                   <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">ACTIVE CORRIDORS</div>
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">BROADER COVERAGE</div>
                     <div className="text-lg font-bold text-slate-900 mt-1">120+</div>
                     <div className="text-[9px] font-normal text-slate-400 mt-0.5">Domestic Corridors</div>
                   </div>
@@ -461,42 +464,88 @@ export function App() {
                 </div>
 
                 <div className="h-80 w-full relative flex items-center justify-center">
-                  <svg className="w-full h-full" viewBox="0 0 340 280" fill="none">
-                    <path d="M 140 25 C 180 15, 200 40, 210 70 C 240 90, 265 120, 235 160 C 215 200, 195 245, 160 255 C 140 245, 115 195, 95 165 C 75 135, 85 75, 140 25 Z" fill="#f1f5f9" opacity="0.85"/>
-                    <path d="M 140 80 L 95 155" stroke="#94a3b8" strokeWidth="1.2" strokeDasharray="3 3"/>
-                    <path d="M 140 80 L 165 205" stroke="#32533D" strokeWidth="2"/>
-                    <path d="M 95 155 L 165 205" stroke="#cbd5e1" strokeWidth="1.2"/>
-                    <path d="M 140 80 L 230 130" stroke="#cbd5e1" strokeWidth="1.2"/>
+                  <svg className="w-full h-full" viewBox="0 0 400 320" fill="none">
+                    {/* India silhouette */}
+                    <path d="M 165 25 C 185 20, 210 30, 220 50 C 235 55, 255 70, 260 90 C 265 105, 250 120, 255 135 C 260 155, 250 170, 240 180 C 235 195, 220 215, 205 235 C 195 255, 180 270, 165 278 C 155 273, 145 253, 140 233 C 130 213, 118 193, 105 173 C 90 153, 78 133, 82 108 C 87 83, 107 58, 127 43 C 137 33, 152 28, 165 25 Z" fill="#f1f5f9" stroke="#e2e8f0" strokeWidth="1" opacity="0.9"/>
 
-                    <circle cx="140" cy="80" r="5" fill="#0f172a"/>
-                    <text x="150" y="76" fill="#0f172a" fontSize="10" fontWeight="bold">DEL</text>
-                    <text x="150" y="86" fill="#94a3b8" fontSize="8">Delhi NCR</text>
+                    {/* Route arcs — curved aviation connections */}
+                    {/* DEL-BLR (MVP observed route — solid green) */}
+                    <path d="M 155 70 Q 105 165, 145 250" stroke="#32533D" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+                    {/* DEL-BOM */}
+                    <path d="M 155 70 Q 95 115, 88 170" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="5 4" strokeLinecap="round"/>
+                    {/* DEL-CCU */}
+                    <path d="M 155 70 Q 205 90, 238 128" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="5 4" strokeLinecap="round"/>
+                    {/* BOM-BLR */}
+                    <path d="M 88 170 Q 100 210, 145 250" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="5 4" strokeLinecap="round"/>
+                    {/* BLR-MAA */}
+                    <path d="M 145 250 Q 160 262, 172 268" stroke="#94a3b8" strokeWidth="1.5" fill="none" strokeDasharray="5 4" strokeLinecap="round"/>
 
-                    <circle cx="95" cy="155" r="4" fill="#0f172a"/>
-                    <text x="65" y="158" fill="#0f172a" fontSize="10" fontWeight="bold">BOM</text>
-                    <text x="65" y="167" fill="#94a3b8" fontSize="8">Mumbai</text>
+                    {/* Hub markers */}
+                    {/* DEL — primary hub */}
+                    <circle cx="155" cy="70" r="5.5" fill="#0f172a"/>
+                    <circle cx="155" cy="70" r="9" fill="none" stroke="#0f172a" strokeWidth="1" opacity="0.2"/>
+                    <text x="165" y="68" fill="#0f172a" fontSize="11" fontWeight="bold">DEL</text>
+                    <text x="165" y="79" fill="#94a3b8" fontSize="8">Delhi NCR</text>
 
-                    <circle cx="145" cy="158" r="3" fill="#64748b"/>
-                    <text x="151" y="161" fill="#64748b" fontSize="8">HYD</text>
+                    {/* BOM */}
+                    <circle cx="88" cy="170" r="4.5" fill="#0f172a"/>
+                    <text x="52" y="167" fill="#0f172a" fontSize="11" fontWeight="bold">BOM</text>
+                    <text x="52" y="177" fill="#94a3b8" fontSize="8">Mumbai</text>
 
-                    <circle cx="165" cy="205" r="5" fill="#32533D"/>
-                    <text x="175" y="208" fill="#32533D" fontSize="10" fontWeight="bold">BLR</text>
-                    <text x="175" y="217" fill="#94a3b8" fontSize="8">Bengaluru</text>
+                    {/* HYD */}
+                    <circle cx="148" cy="185" r="3.5" fill="#64748b"/>
+                    <text x="155" y="188" fill="#64748b" fontSize="9" fontWeight="600">HYD</text>
 
-                    <circle cx="230" cy="130" r="3" fill="#64748b"/>
-                    <text x="236" y="133" fill="#64748b" fontSize="8">CCU</text>
+                    {/* BLR — MVP observed hub */}
+                    <circle cx="145" cy="250" r="5.5" fill="#32533D"/>
+                    <circle cx="145" cy="250" r="9" fill="none" stroke="#32533D" strokeWidth="1" opacity="0.25"/>
+                    <text x="155" y="248" fill="#32533D" fontSize="11" fontWeight="bold">BLR</text>
+                    <text x="155" y="259" fill="#94a3b8" fontSize="8">Bengaluru</text>
 
-                    <g transform="translate(155, 115)">
-                      <rect width="84" height="22" rx="6" fill="#ffffff" stroke="#e2e8f0" filter="drop-shadow(0 1px 2px rgba(0,0,0,0.05))"/>
-                      <text x="7" y="14" fill="#0f172a" fontSize="9" fontWeight="bold">DEL-BLR</text>
-                      <text x="50" y="14" fill="#d97706" fontSize="8" fontWeight="bold">Observed</text>
+                    {/* CCU */}
+                    <circle cx="238" cy="128" r="3.5" fill="#64748b"/>
+                    <text x="246" y="131" fill="#64748b" fontSize="9" fontWeight="600">CCU</text>
+
+                    {/* MAA */}
+                    <circle cx="172" cy="268" r="3.5" fill="#64748b"/>
+                    <text x="180" y="271" fill="#64748b" fontSize="9" fontWeight="600">MAA</text>
+
+                    {/* Observed route badge */}
+                    <g transform="translate(168, 105)">
+                      <rect width="92" height="22" rx="6" fill="#ffffff" stroke="#e2e8f0" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.06))"/>
+                      <text x="8" y="14" fill="#32533D" fontSize="9" fontWeight="bold">DEL-BLR</text>
+                      <text x="56" y="14" fill="#d97706" fontSize="8" fontWeight="bold">Observed</text>
                     </g>
                   </svg>
                 </div>
 
                 <div className="flex justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-100">
-                  <span>• Representative Corridors</span>
-                  <span>120+ Corridors Monitored</span>
+                  <span>• Representative Hubs</span>
+                  <span>120+ Corridors Broader Coverage</span>
+                </div>
+              </div>
+              </div>
+
+              {/* Representative MVP Routes — clickable */}
+              <div className="pt-2 border-t border-slate-200/80">
+                <div className="flex justify-between items-center mb-3">
+                  <h3 className="text-sm font-bold text-slate-900">Representative MVP Routes</h3>
+                  <span className="text-[10px] text-slate-400">Click a route to open Route Analytics</span>
+                </div>
+                <div className="grid grid-cols-5 gap-3">
+                  {(['DEL-BLR', 'DEL-BOM', 'BOM-BLR', 'BLR-HYD', 'DEL-MAA'] as MvpRoute[]).map((route) => (
+                    <button
+                      key={route}
+                      onClick={() => { setSelectedRoute(route); setActiveTab('route-analytics'); }}
+                      className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-xs hover:border-[#32533D] hover:shadow-sm transition text-left group"
+                    >
+                      <div className="font-mono text-xs font-bold text-slate-900 group-hover:text-[#32533D] transition">{route}</div>
+                      <div className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
+                        <span>Route Analytics</span>
+                        <span className="group-hover:translate-x-0.5 transition">→</span>
+                      </div>
+                    </button>
+                  ))}
                 </div>
               </div>
             </div>
