@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export type PageView = 'welcome' | 'overview' | 'route-analytics' | 'fare-forecast' | 'alerts' | 'methodology';
 
@@ -249,7 +250,37 @@ export function App() {
   const [activeTab, setActiveTab] = useState<PageView>('welcome');
   const [selectedRoute, setSelectedRoute] = useState<MvpRoute>('DEL-BLR');
   const [forecastRoute, setForecastRoute] = useState<MvpRoute>('DEL-BLR');
+  const [indexData, setIndexData] = useState<any>(null);
+  const [indexLoading, setIndexLoading] = useState(true);
+  const [indexError, setIndexError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const fetchIndex = async () => {
+      try {
+        setIndexLoading(true);
+        setIndexError(null);
+
+        const response = await fetch(
+          `${API_BASE_URL}/api/v1/index?travel_date=2026-09-20&base_date=2026-09-20`
+        );
+
+        if (!response.ok) {
+          throw new Error(`API request failed: ${response.status}`);
+        }
+
+        const data = await response.json();
+        setIndexData(data);
+      } catch (error) {
+        setIndexError(
+          error instanceof Error ? error.message : 'Unable to connect to backend'
+        );
+      } finally {
+        setIndexLoading(false);
+      }
+    };
+
+    fetchIndex();
+  }, []);
   const isLanding = activeTab === 'welcome';
   const selectedRouteIndex = MVP_ROUTES.indexOf(selectedRoute) + 1;
   const selectedRouteFare = ROUTE_MEDIAN_FARES[selectedRoute] ?? null;
@@ -572,7 +603,9 @@ export function App() {
               <div className="grid grid-cols-4 gap-4">
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-3">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">NATIONAL COMPOSITE AIR FARE INDEX</span>
-                  <div className="text-3xl font-extrabold text-slate-900">148.2</div>
+                  <div className="text-3xl font-extrabold text-slate-900">
+                    {indexLoading ? '...' : indexError ? 'N/A' : indexData?.index ?? 'N/A'}
+                  </div>
                   <p className="text-[11px] text-slate-500">Composite MVP Index</p>
                 </div>
 
@@ -584,13 +617,17 @@ export function App() {
 
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">SUPPORTED MVP CORRIDORS</span>
-                  <div className="text-3xl font-extrabold text-slate-900">25</div>
+                  <div className="text-3xl font-extrabold text-slate-900">
+                    {indexLoading ? '...' : indexError ? 'N/A' : indexData?.available_routes?.length ?? 0}
+                  </div>
                   <p className="text-[11px] text-slate-500">Domestic routes</p>
                 </div>
 
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">OBSERVATIONS</span>
-                  <div className="text-3xl font-extrabold text-slate-900">125</div>
+                  <div className="text-3xl font-extrabold text-slate-900">
+                    {indexLoading ? '...' : indexError ? 'N/A' : indexData?.total_observations ?? 0}
+                  </div>
                   <p className="text-[11px] text-slate-500">5 per MVP route</p>
                 </div>
               </div>

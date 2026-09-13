@@ -12,3 +12,4 @@ class IndexResponse(BaseModel):
     missing_routes: list[str]
     coverage: float
     current_prices: dict[str, float]
+    total_observations: int

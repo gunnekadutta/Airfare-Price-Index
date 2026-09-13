@@ -87,6 +87,7 @@ def get_index(
             current_data=current_data,
             base_prices=base_prices,
         )
+        result["total_observations"] = len(current_fares)
 
         return result
 
