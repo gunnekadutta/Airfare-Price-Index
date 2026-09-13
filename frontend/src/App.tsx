@@ -3,6 +3,10 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export type PageView = 'welcome' | 'overview' | 'route-analytics' | 'fare-forecast' | 'alerts' | 'methodology';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
+
+export { API_BASE_URL };
+
 const MVP_ROUTES = [
   'DEL-BOM', 'DEL-BLR', 'DEL-HYD', 'DEL-CCU', 'DEL-MAA',
   'DEL-AMD', 'DEL-PNQ', 'DEL-GOI', 'DEL-COK', 'DEL-GAU',
@@ -27,6 +31,7 @@ type RouteObservation = {
   currency: string;
   fare_type: string | null;
   source: string | null;
+  booking_window: string | null;
   is_round_trip: boolean | null;
   taxes: number | null;
   total_fare: number | null;
@@ -52,6 +57,7 @@ const DEL_BLR_OBSERVATIONS: RouteObservation[] = [
     currency: 'INR',
     fare_type: null,
     source: 'Direct API',
+    booking_window: null,
     is_round_trip: false,
     taxes: 650,
     total_fare: 5750,
@@ -70,6 +76,7 @@ const DEL_BLR_OBSERVATIONS: RouteObservation[] = [
     currency: 'INR',
     fare_type: null,
     source: 'GDS Aggregator',
+    booking_window: null,
     is_round_trip: false,
     taxes: 698,
     total_fare: 5948,
@@ -88,6 +95,7 @@ const DEL_BLR_OBSERVATIONS: RouteObservation[] = [
     currency: 'INR',
     fare_type: null,
     source: 'GDS Aggregator',
+    booking_window: null,
     is_round_trip: false,
     taxes: 740,
     total_fare: 6120,
@@ -106,6 +114,7 @@ const DEL_BLR_OBSERVATIONS: RouteObservation[] = [
     currency: 'INR',
     fare_type: null,
     source: null,
+    booking_window: null,
     is_round_trip: null,
     taxes: null,
     total_fare: null,
@@ -124,6 +133,7 @@ const DEL_BLR_OBSERVATIONS: RouteObservation[] = [
     currency: 'INR',
     fare_type: null,
     source: null,
+    booking_window: null,
     is_round_trip: null,
     taxes: null,
     total_fare: null,
@@ -247,12 +257,19 @@ function RouteFareBreakdown({
 }
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<PageView>('welcome');
-  const [selectedRoute, setSelectedRoute] = useState<MvpRoute>('DEL-BLR');
-  const [forecastRoute, setForecastRoute] = useState<MvpRoute>('DEL-BLR');
+const [indexData, setIndexData] = useState<any>(null);
+const [indexLoading, setIndexLoading] = useState(true);
+const [indexError, setIndexError] = useState<string | null>(null);
+const [overviewPeriod, setOverviewPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+const [leadTimeHorizon, setLeadTimeHorizon] = useState<1 | 7 | 15 | 30 | 45>(1);
+<<<<<<< HEAD
   const [indexData, setIndexData] = useState<any>(null);
   const [indexLoading, setIndexLoading] = useState(true);
   const [indexError, setIndexError] = useState<string | null>(null);
+=======
+  const [overviewPeriod, setOverviewPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+  const [leadTimeHorizon, setLeadTimeHorizon] = useState<1 | 7 | 15 | 30 | 45>(1);
+>>>>>>> 35ee82a0957faff8c42619536b341be6abb134e9
 
   useEffect(() => {
     const fetchIndex = async () => {
@@ -466,24 +483,24 @@ export function App() {
 
                 <div className="grid grid-cols-4 gap-3 pt-5 border-t border-slate-200/80">
                   <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">BROADER COVERAGE</div>
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">BROADER PLATFORM COVERAGE</div>
                     <div className="text-lg font-bold text-slate-900 mt-1">120+</div>
-                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">Domestic Corridors</div>
+                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">Domestic Corridors (Monitored)</div>
                   </div>
                   <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">MVP ROUTES</div>
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">MVP INDEX BASKET</div>
                     <div className="text-lg font-bold text-slate-900 mt-1">25</div>
                     <div className="text-[9px] font-normal text-slate-400 mt-0.5">Supported Corridors</div>
                   </div>
                   <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">OBSERVATIONS</div>
-                    <div className="text-lg font-bold text-slate-900 mt-1">125</div>
-                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">5 per MVP Route</div>
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">OBSERVED-DATA COVERAGE</div>
+                    <div className="text-lg font-bold text-slate-900 mt-1">2 <span className="text-[10px] font-normal text-slate-400">of 25</span></div>
+                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">Routes with Live Observations</div>
                   </div>
                   <div className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-xs">
-                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">ROUTE WEIGHT</div>
+                    <div className="text-slate-400 text-[9px] font-bold uppercase tracking-wide">MVP ROUTE WEIGHT</div>
                     <div className="text-lg font-bold text-slate-900 mt-1">4.0%</div>
-                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">Equal MVP Weight</div>
+                    <div className="text-[9px] font-normal text-slate-400 mt-0.5">Equal-Weight Fallback</div>
                   </div>
                 </div>
               </div>
@@ -553,7 +570,7 @@ export function App() {
 
                 <div className="flex justify-between text-[11px] text-slate-400 pt-2 border-t border-slate-100">
                   <span>• Representative Hubs</span>
-                  <span>120+ Corridors Broader Coverage</span>
+                  <span>120+ Corridors Broader Coverage · 25 MVP Basket · 2 with Live Data</span>
                 </div>
               </div>
               </div>
@@ -565,19 +582,22 @@ export function App() {
                   <span className="text-[10px] text-slate-400">Click a route to open Route Analytics</span>
                 </div>
                 <div className="grid grid-cols-5 gap-3">
-                  {(['DEL-BLR', 'DEL-BOM', 'BOM-BLR', 'BLR-HYD', 'DEL-MAA'] as MvpRoute[]).map((route) => (
-                    <button
-                      key={route}
-                      onClick={() => { setSelectedRoute(route); setActiveTab('route-analytics'); }}
-                      className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-xs hover:border-[#32533D] hover:shadow-sm transition text-left group"
-                    >
-                      <div className="font-mono text-xs font-bold text-slate-900 group-hover:text-[#32533D] transition">{route}</div>
-                      <div className="text-[10px] text-slate-400 mt-1 flex items-center gap-1">
-                        <span>Route Analytics</span>
-                        <span className="group-hover:translate-x-0.5 transition">→</span>
-                      </div>
-                    </button>
-                  ))}
+                  {(['DEL-BLR', 'DEL-BOM', 'BOM-BLR', 'BLR-HYD', 'DEL-MAA'] as MvpRoute[]).map((route) => {
+                    const hasObs = route === 'DEL-BLR';
+                    return (
+                      <button
+                        key={route}
+                        onClick={() => { setSelectedRoute(route); setActiveTab('route-analytics'); }}
+                        className="bg-white p-3.5 rounded-xl border border-slate-200/80 shadow-xs hover:border-[#32533D] hover:shadow-sm transition text-left group"
+                      >
+                        <div className="font-mono text-xs font-bold text-slate-900 group-hover:text-[#32533D] transition">{route}</div>
+                        <div className="text-[10px] text-slate-400 mt-1 flex items-center justify-between">
+                          <span>Route Analytics</span>
+                          <span className={`text-[9px] font-bold ${hasObs ? 'text-emerald-600' : 'text-slate-400'}`}>{hasObs ? 'Observed' : 'No data'}</span>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -597,6 +617,22 @@ export function App() {
                     <span className="text-emerald-600">●</span> Live Demo Active
                   </span>
                   <span className="text-[10px] text-slate-400">25 Supported MVP Corridors</span>
+                </div>
+              </div>
+
+              {/* Period Selector */}
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">PERIOD</span>
+                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200/80">
+                  {(['daily', 'weekly', 'monthly'] as const).map((p) => (
+                    <button
+                      key={p}
+                      onClick={() => setOverviewPeriod(p)}
+                      className={`px-3 py-1 text-[11px] font-semibold rounded-md transition ${overviewPeriod === p ? 'bg-[#32533D] text-white' : 'text-slate-600 hover:text-slate-900'}`}
+                    >
+                      {p === 'daily' ? 'Daily' : p === 'weekly' ? 'Weekly' : 'Monthly'}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -667,6 +703,48 @@ export function App() {
                 </div>
               </div>
 
+              {/* Price Trend */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">PRICE TREND</span>
+                    <h3 className="text-base font-bold text-slate-900 mt-1">Observed Fare Price Trend</h3>
+                    <p className="text-[11px] text-slate-500 mt-1">Fare-level movement over time ({overviewPeriod === 'daily' ? 'Daily' : overviewPeriod === 'weekly' ? 'Weekly' : 'Monthly'} view).</p>
+                  </div>
+                </div>
+                <div className="h-48 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-sm font-semibold text-slate-400">No time-series fare trend data available</div>
+                    <div className="text-xs text-slate-400 mt-1">Price trend requires observation-level data collected over multiple periods. Currently the MVP dataset has a single observation snapshot.</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Route/Sector Heatmap */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">ROUTE / SECTOR HEATMAP</span>
+                    <h3 className="text-base font-bold text-slate-900 mt-1">Route Fare Intensity</h3>
+                    <p className="text-[11px] text-slate-500 mt-1">Observed fare intensity across supported MVP corridors.</p>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {MVP_ROUTES.map((route) => {
+                    const fare = ROUTE_MEDIAN_FARES[route] ?? null;
+                    return (
+                      <div key={route} className={`rounded-lg px-3 py-2 text-center border min-w-[90px] ${fare !== null ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'}`}>
+                        <div className="font-mono text-[10px] font-bold text-slate-700">{route}</div>
+                        <div className={`text-[9px] mt-0.5 ${fare !== null ? 'text-emerald-700 font-semibold' : 'text-slate-400 italic'}`}>
+                          {fare !== null ? `₹${fare.toLocaleString('en-IN')}` : 'Not available'}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+                <p className="text-[11px] text-slate-400">2 of 25 MVP routes have observed fare data. Remaining corridors show partial coverage.</p>
+              </div>
+
               <div className="grid grid-cols-12 gap-6">
                 <div className="col-span-8 bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
                   <div className="p-5 border-b border-slate-100 flex items-start justify-between gap-4">
@@ -686,7 +764,7 @@ export function App() {
                           <th className="px-5 py-3 font-bold">Route</th>
                           <th className="px-4 py-3 font-bold">Observed Fare</th>
                           <th className="px-4 py-3 font-bold">Observations</th>
-                          <th className="px-5 py-3 font-bold text-right">Weight</th>
+                          <th className="px-5 py-3 font-bold text-right">Weight (Fallback)</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-slate-100 text-slate-700">
@@ -736,7 +814,7 @@ export function App() {
                     <div className="flex justify-between border-b border-emerald-100 pb-2"><span className="text-slate-500">Supported routes</span><span className="font-bold text-slate-900">25</span></div>
                     <div className="flex justify-between border-b border-emerald-100 pb-2"><span className="text-slate-500">Observations</span><span className="font-bold text-slate-900">125</span></div>
                     <div className="flex justify-between border-b border-emerald-100 pb-2"><span className="text-slate-500">Observations per route</span><span className="font-bold text-slate-900">5</span></div>
-                    <div className="flex justify-between"><span className="text-slate-500">Route weighting</span><span className="font-bold text-slate-900">Equal · 4.0%</span></div>
+                    <div className="flex justify-between"><span className="text-slate-500">Route weighting</span><span className="font-bold text-slate-900">MVP equal-weight fallback · 4.0%</span></div>
                   </div>
                   <p className="text-[11px] leading-relaxed text-slate-600 mt-6 pt-4 border-t border-emerald-100">Observation-level fare data powers the index.</p>
                 </div>
@@ -767,6 +845,23 @@ export function App() {
                 <span className="text-xs text-slate-500">MVP route {selectedRouteIndex} of 25</span>
               </div>
 
+              {/* Lead-time Horizon Selector */}
+              <div className="bg-white p-4 rounded-xl border border-slate-200/80 flex items-center gap-4 shadow-2xs">
+                <label htmlFor="lead-time-selector" className="text-xs font-bold text-slate-400 uppercase">Lead-time Horizon:</label>
+                <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-lg border border-slate-200/80">
+                  {([1, 7, 15, 30, 45] as const).map((h) => (
+                    <button
+                      key={h}
+                      onClick={() => setLeadTimeHorizon(h)}
+                      className={`px-3 py-1 text-[11px] font-semibold rounded-md transition ${leadTimeHorizon === h ? 'bg-[#32533D] text-white' : 'text-slate-600 hover:text-slate-900'}`}
+                    >
+                      T+{h}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[10px] text-slate-400">Booking lead-time in days</span>
+              </div>
+
               <div className="grid grid-cols-4 gap-4">
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
                   <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">ROUTE</span>
@@ -786,9 +881,9 @@ export function App() {
                   <p className="text-xs text-slate-500">Median route price where available</p>
                 </div>
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MVP ROUTE WEIGHT</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MVP WEIGHT (FALLBACK)</span>
                   <div className="text-2xl font-extrabold text-slate-900">4.0%</div>
-                  <p className="text-xs text-slate-500">Equal weighting · 1 / 25 routes</p>
+                  <p className="text-xs text-slate-500">MVP equal-weight fallback · 1 / 25 routes</p>
                 </div>
               </div>
 
@@ -796,7 +891,24 @@ export function App() {
                 <div className="w-9 h-9 rounded-xl bg-white border border-indigo-100 flex items-center justify-center text-indigo-500 shrink-0">↗</div>
                 <div>
                   <div className="text-xs font-bold text-slate-800">How this route contributes to the index</div>
-                  <p className="text-[11px] text-slate-500 mt-1">5 observations <span className="text-indigo-400 mx-1">→</span> median route price <span className="text-indigo-400 mx-1">→</span> 4.0% MVP route weight</p>
+                  <p className="text-[11px] text-slate-500 mt-1">5 observations <span className="text-indigo-400 mx-1">→</span> median route price <span className="text-indigo-400 mx-1">→</span> 4.0% MVP equal-weight fallback</p>
+                </div>
+              </div>
+
+              {/* Lead-time Fare Curve */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                <div className="flex justify-between items-start gap-4">
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">LEAD-TIME FARE CURVE</span>
+                    <h3 className="text-base font-bold text-slate-900 mt-1">{selectedRoute} — Fare by Booking Lead-time (T+{leadTimeHorizon})</h3>
+                    <p className="text-[11px] text-slate-500 mt-1">Observed fare variation across booking lead-time horizons.</p>
+                  </div>
+                </div>
+                <div className="h-48 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-sm font-semibold text-slate-400">No lead-time fare data available for {selectedRoute}</div>
+                    <div className="text-xs text-slate-400 mt-1">Lead-time fare curves require observations collected at multiple booking windows. Currently the MVP dataset does not include lead-time-tagged observations.</div>
+                  </div>
                 </div>
               </div>
 
@@ -810,7 +922,7 @@ export function App() {
                   <span className="text-[10px] font-semibold text-[#32533D] bg-emerald-50 border border-emerald-100 px-2.5 py-1.5 rounded-lg">MVP sample set</span>
                 </div>
                 <div className="overflow-x-auto">
-                  <table className="w-full min-w-[1160px] text-left border-collapse text-xs">
+                  <table className="w-full min-w-[1260px] text-left border-collapse text-xs">
                     <caption className="sr-only">Observation-level fare data for {selectedRoute}</caption>
                     <thead>
                       <tr className="border-b border-slate-200/60 text-[10px] uppercase tracking-wider text-slate-400 bg-slate-50">
@@ -823,6 +935,7 @@ export function App() {
                         <th className="px-4 py-3 font-bold">Fare</th>
                         <th className="px-4 py-3 font-bold">Fare Type</th>
                         <th className="px-4 py-3 font-bold">Source</th>
+                        <th className="px-4 py-3 font-bold">Booking Window</th>
                         <th className="px-4 py-3 font-bold">Round Trip</th>
                       </tr>
                     </thead>
@@ -843,11 +956,12 @@ export function App() {
                           <td className="px-4 py-3">
                             <span className={observation.source ? 'font-medium text-emerald-700' : 'italic text-slate-400'}>{observation.source ?? 'Not available'}</span>
                           </td>
+                          <td className="px-4 py-3 text-slate-500">{observation.booking_window ?? 'Not available'}</td>
                           <td className="px-4 py-3 text-slate-600">{observation.is_round_trip === true ? 'Round trip' : observation.is_round_trip === false ? 'One-way' : 'Not available'}</td>
                         </tr>
                       )) : (
                         <tr>
-                          <td colSpan={10} className="px-6 py-12 text-center">
+                          <td colSpan={11} className="px-6 py-12 text-center">
                             <div className="text-sm font-semibold text-slate-700">Observation rows are not available for {selectedRoute} in the current demo set.</div>
                             <div className="text-xs text-slate-400 mt-1">The route remains part of the 25-route MVP basket and is ready for observation-level data.</div>
                           </td>
@@ -866,7 +980,7 @@ export function App() {
             const obs = routeObs.filter(o => o.fare_displayed !== null);
             const obsFares = obs.map(o => o.fare_displayed!);
             const sortedFares = obsFares.slice().sort((a, b) => a - b);
-            const recentFare = ROUTE_MEDIAN_FARES[forecastRoute] ?? (sortedFares.length > 0 ? sortedFares[Math.floor(sortedFares.length / 2)] : null);
+            const recentFare = sortedFares.length > 0 ? sortedFares[Math.floor(sortedFares.length / 2)] : null;
             const forecastFare = recentFare !== null ? Math.round(recentFare * 1.05) : null;
             const obsTaxes = obs.map(o => o.taxes).filter((t): t is number => t !== null);
             const forecastTaxes = obsTaxes.length > 0 ? obsTaxes.slice().sort((a, b) => a - b)[Math.floor(obsTaxes.length / 2)] : null;
@@ -934,7 +1048,7 @@ export function App() {
                     <option key={route} value={route}>{route}</option>
                   ))}
                 </select>
-                <span className="text-[10px] text-slate-400">25 supported MVP routes</span>
+                <span className="text-[10px] text-slate-400">25 MVP routes · forecast available only where observed data exists</span>
               </div>
 
               {/* Forecast + Observed cards */}
@@ -960,9 +1074,12 @@ export function App() {
                       </div>
                     </>
                   ) : (
-                    <div className="text-2xl font-bold text-slate-400 italic">Not available</div>
+                    <div className="space-y-3">
+                      <div className="text-2xl font-bold text-slate-400 italic">Forecast not available for this route</div>
+                      <p className="text-xs text-slate-400">No observed fare data exists for {forecastRoute} in the current MVP dataset. Forecasting requires route-specific observation-level data.</p>
+                    </div>
                   )}
-                  <p className="text-xs text-slate-500">Forward-looking fare estimate based on observed fare data.</p>
+                  <p className="text-xs text-slate-500">Forward-looking fare estimate based on observed fare data for this route only.</p>
                 </div>
 
                 <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
@@ -1222,9 +1339,9 @@ export function App() {
                   <p className="text-xs text-slate-500">25 routes × 5 observations</p>
                 </div>
                 <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs space-y-2">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">INITIAL ROUTE WEIGHT</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MVP ROUTE WEIGHT (FALLBACK)</span>
                   <div className="text-2xl font-extrabold text-slate-900">4.0%</div>
-                  <p className="text-xs text-slate-500">Equal weight per MVP route</p>
+                  <p className="text-xs text-slate-500">Equal-weight fallback per MVP route</p>
                 </div>
               </div>
 
@@ -1236,8 +1353,8 @@ export function App() {
                     { n: '1', title: 'Collect Fare Observations', desc: 'Collect 5 fare observations for each supported MVP route.' },
                     { n: '2', title: 'Calculate Route Median', desc: 'Calculate the median observed fare for each route to reduce the effect of individual extreme observations.' },
                     { n: '3', title: 'Compare With Base Period', desc: "Compare each route's current median fare with its corresponding base-period route fare." },
-                    { n: '4', title: 'Apply Route Weights', desc: 'In the current MVP, each of the 25 routes receives an equal 4.0% weight.' },
-                    { n: '5', title: 'Calculate Composite AFI', desc: 'Aggregate the weighted route fare relatives into the Air Fare Index using a fixed-base Laspeyres-style approach.' },
+                    { n: '4', title: 'Apply Route Weights', desc: 'Route weights are inputs to the Laspeyres-style methodology. In the current MVP, each of the 25 routes receives an equal 4.0% weight as a fallback until validated weights are available.' },
+                    { n: '5', title: 'Calculate Composite AFI', desc: 'Aggregate the weighted route fare relatives into the Air Fare Index using a fixed-base Laspeyres-style approach. The methodology remains Laspeyres-style regardless of the weight source.' },
                   ].map((step) => (
                     <div key={step.n} className="flex items-start gap-3">
                       <div className="w-7 h-7 rounded-full bg-[#32533D] text-white text-xs font-bold flex items-center justify-center shrink-0">{step.n}</div>
@@ -1262,7 +1379,7 @@ export function App() {
                   <div><span className="font-mono font-semibold text-slate-800">w_i</span> = route weight</div>
                   <div><span className="font-mono font-semibold text-slate-800">Σw_i</span> = 1</div>
                 </div>
-                <p className="text-[11px] text-slate-500">In the MVP, w_i = 0.04 for each of the 25 supported routes.</p>
+                <p className="text-[11px] text-slate-500">In the MVP, w_i = 0.04 for each of the 25 supported routes (equal-weight fallback). The final system may use validated prescribed or passenger-traffic-based weights as w_i inputs.</p>
               </div>
 
               {/* Observation Data */}
@@ -1270,10 +1387,31 @@ export function App() {
                 <h3 className="text-sm font-bold text-slate-900">Observation Data</h3>
                 <p className="text-xs text-slate-500">Route-level medians are derived from collected fare observations. The production methodology will specify which fare field is used for index calculation once the backend methodology is finalized.</p>
                 <div className="grid grid-cols-4 gap-2">
-                  {['observation_id','collected_at','travel_date','origin','destination','route','airline','flight_number','departure_time','fare_displayed','currency','fare_type','source','is_round_trip','taxes','total_fare'].map((field) => (
+                  {['observation_id','collected_at','travel_date','origin','destination','route','airline','flight_number','departure_time','fare_displayed','currency','fare_type','source','booking_window','is_round_trip','taxes','total_fare'].map((field) => (
                     <div key={field} className="bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-[11px] font-mono text-slate-700 text-center">{field}</div>
                   ))}
                 </div>
+              </div>
+
+              {/* Booking Window Methodology */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                <h3 className="text-sm font-bold text-slate-900">Booking Window Methodology</h3>
+                <p className="text-xs text-slate-500">Fare observations are tagged with a booking window representing the lead time between observation collection and the travel date. This enables fare analysis across different advance-purchase horizons.</p>
+                <div className="grid grid-cols-5 gap-3">
+                  {[
+                    { code: 'T+1', desc: '1 day before travel' },
+                    { code: 'T+7', desc: '7 days before travel' },
+                    { code: 'T+15', desc: '15 days before travel' },
+                    { code: 'T+30', desc: '30 days before travel' },
+                    { code: 'T+45', desc: '45 days before travel' },
+                  ].map((bw) => (
+                    <div key={bw.code} className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+                      <div className="font-mono text-xs font-bold text-slate-900">{bw.code}</div>
+                      <div className="text-[10px] text-slate-500 mt-1">{bw.desc}</div>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-[11px] text-slate-400">Prototype observed-data coverage across booking windows may be partial. Not every route will have observations at every window in the current MVP dataset.</p>
               </div>
 
               {/* MVP Scope vs Broader Coverage */}
@@ -1293,8 +1431,32 @@ export function App() {
                 <div className="w-9 h-9 rounded-xl bg-white border border-indigo-100 flex items-center justify-center text-indigo-500 shrink-0">ⓘ</div>
                 <div>
                   <div className="text-xs font-bold text-slate-800">Future Weighting</div>
-                  <p className="text-[11px] text-slate-500 mt-1">The MVP begins with equal route weights of 4.0%. A future production methodology may replace equal weighting with passenger-traffic-based route weights when a validated traffic dataset is integrated.</p>
+                  <p className="text-[11px] text-slate-500 mt-1">The MVP begins with equal route weights of 4.0% as a fallback. The final system can use validated prescribed weights or passenger-traffic-based route weights when a validated traffic dataset is integrated. The Laspeyres-style construction methodology itself does not change.</p>
                 </div>
+              </div>
+
+              {/* Back-testing & External Validation */}
+              <div className="bg-white p-6 rounded-2xl border border-slate-200/80 shadow-xs space-y-4">
+                <h3 className="text-sm font-bold text-slate-900">Back-testing &amp; External Validation</h3>
+                <p className="text-xs text-slate-500">The final system is intended to demonstrate at least 30 days of historical index results validated against relevant DGCA reference data. This back-testing will confirm that the index methodology and route weights produce results consistent with independently published fare benchmarks.</p>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">MINIMUM HISTORY</div>
+                    <div className="text-lg font-extrabold text-slate-900 mt-1">30 days</div>
+                    <div className="text-[10px] text-slate-500 mt-0.5">Of historical index results</div>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">REFERENCE SOURCE</div>
+                    <div className="text-lg font-extrabold text-slate-900 mt-1">DGCA</div>
+                    <div className="text-[10px] text-slate-500 mt-0.5">Relevant published fare data</div>
+                  </div>
+                  <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-center">
+                    <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400">CURRENT STATUS</div>
+                    <div className="text-lg font-extrabold text-slate-400 mt-1">Pending</div>
+                    <div className="text-[10px] text-slate-500 mt-0.5">No back-test results available yet</div>
+                  </div>
+                </div>
+                <p className="text-[11px] text-slate-400">No back-test results, DGCA reference values, or validation statistics are available in the current prototype. These will be populated once the historical observation dataset and DGCA reference data are integrated.</p>
               </div>
             </div>
           )}
