@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
+
 
 export type PageView = 'welcome' | 'overview' | 'route-analytics' | 'fare-forecast' | 'alerts' | 'methodology';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
 
 export { API_BASE_URL };
 
@@ -257,19 +257,15 @@ function RouteFareBreakdown({
 }
 
 export function App() {
-const [indexData, setIndexData] = useState<any>(null);
-const [indexLoading, setIndexLoading] = useState(true);
-const [indexError, setIndexError] = useState<string | null>(null);
-const [overviewPeriod, setOverviewPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
-const [leadTimeHorizon, setLeadTimeHorizon] = useState<1 | 7 | 15 | 30 | 45>(1);
-<<<<<<< HEAD
   const [indexData, setIndexData] = useState<any>(null);
   const [indexLoading, setIndexLoading] = useState(true);
   const [indexError, setIndexError] = useState<string | null>(null);
-=======
   const [overviewPeriod, setOverviewPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [leadTimeHorizon, setLeadTimeHorizon] = useState<1 | 7 | 15 | 30 | 45>(1);
->>>>>>> 35ee82a0957faff8c42619536b341be6abb134e9
+
+  const [activeTab, setActiveTab] = useState<PageView>('welcome');
+  const [selectedRoute, setSelectedRoute] = useState<MvpRoute>('DEL-BLR');
+  const [forecastRoute, setForecastRoute] = useState<MvpRoute>('DEL-BLR');
 
   useEffect(() => {
     const fetchIndex = async () => {
