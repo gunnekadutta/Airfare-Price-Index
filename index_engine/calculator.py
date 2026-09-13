@@ -23,19 +23,25 @@ def calculate_index(
     base_prices: dict[str, float],
 ) -> dict:
     """
-    Calculate the Airfare Price Index for a given set of
-    current fare observations.
+    Calculate the Airfare Price Index for one current period.
 
     Args:
         current_data:
-            Fare observations for the current period.
+            Fare observations for one travel-date/current period.
 
         base_prices:
             Representative base-period fare for each route.
 
     Returns:
-        Dictionary containing the overall index, route indices,
-        contributions, and coverage information.
+        Dictionary containing:
+
+        - overall index
+        - route indices
+        - route contributions
+        - available routes
+        - missing routes
+        - basket coverage
+        - current prices
     """
 
     # ---------------------------------------------------------
@@ -50,8 +56,27 @@ def calculate_index(
 
     aggregated = calculate_route_median(current_data)
 
+    if aggregated.empty:
+        raise ValueError(
+            "No aggregated fare data available."
+        )
+
     # ---------------------------------------------------------
-    # 3. Build current-price dictionary
+    # 3. Ensure one current travel date is being calculated
+    # ---------------------------------------------------------
+
+    travel_dates = aggregated["travel_date"].dt.date.unique()
+
+    if len(travel_dates) > 1:
+        raise ValueError(
+            "calculate_index() expects fare data for "
+            "one travel date at a time."
+        )
+
+    current_travel_date = travel_dates[0]
+
+    # ---------------------------------------------------------
+    # 4. Build current-price dictionary
     # ---------------------------------------------------------
 
     current_prices = dict(
@@ -62,13 +87,13 @@ def calculate_index(
     )
 
     # ---------------------------------------------------------
-    # 4. Get route weights
+    # 5. Get route weights
     # ---------------------------------------------------------
 
     weights = get_default_weights()
 
     # ---------------------------------------------------------
-    # 5. Identify routes available for calculation
+    # 6. Identify routes available for calculation
     # ---------------------------------------------------------
 
     available_routes = [
@@ -76,6 +101,7 @@ def calculate_index(
         for route in ROUTE_BASKET
         if route in current_prices
         and route in base_prices
+        and route in weights
     ]
 
     if not available_routes:
@@ -84,7 +110,7 @@ def calculate_index(
         )
 
     # ---------------------------------------------------------
-    # 6. Calculate overall index
+    # 7. Calculate overall index
     # ---------------------------------------------------------
 
     overall_index = calculate_overall_index(
@@ -94,7 +120,7 @@ def calculate_index(
     )
 
     # ---------------------------------------------------------
-    # 7. Calculate route-level indices
+    # 8. Calculate route-level indices
     # ---------------------------------------------------------
 
     route_indices = {}
@@ -106,7 +132,7 @@ def calculate_index(
         )
 
     # ---------------------------------------------------------
-    # 8. Calculate route contributions
+    # 9. Calculate route contributions
     # ---------------------------------------------------------
 
     contributions = calculate_route_contributions(
@@ -116,7 +142,7 @@ def calculate_index(
     )
 
     # ---------------------------------------------------------
-    # 9. Calculate basket coverage
+    # 10. Calculate basket coverage
     # ---------------------------------------------------------
 
     available_weight = sum(
@@ -126,21 +152,37 @@ def calculate_index(
 
     total_weight = sum(weights.values())
 
+    if total_weight <= 0:
+        raise ValueError(
+            "Total route weight must be greater than zero."
+        )
+
     coverage = available_weight / total_weight
 
     # ---------------------------------------------------------
-    # 10. Return complete result
+    # 11. Identify missing routes
+    # ---------------------------------------------------------
+
+    missing_routes = [
+        route
+        for route in ROUTE_BASKET
+        if route not in available_routes
+    ]
+
+    # ---------------------------------------------------------
+    # 12. Return complete result
     # ---------------------------------------------------------
 
     return {
         "index": overall_index,
+        "travel_date": current_travel_date,
         "route_indices": route_indices,
         "route_contributions": contributions,
         "available_routes": available_routes,
-        "missing_routes": [
-            route
-            for route in ROUTE_BASKET
-            if route not in available_routes
-        ],
+        "missing_routes": missing_routes,
         "coverage": coverage,
+        "current_prices": {
+            route: current_prices[route]
+            for route in available_routes
+        },
     }

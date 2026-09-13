@@ -1,87 +1,110 @@
-from fastapi import APIRouter
-from api.schemas.fare import Fare
-from fastapi import HTTPException
+import logging
 from datetime import date
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session
+
+from database import get_db
+from database.models import FareObservation
+from database.repositories.fare_repository import FareRepository
+
+from api.schemas.fare import Fare
+
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-fares_data = [
-    {
-        "id": "1",
-        "origin": "DEL",
-        "destination": "BLR",
-        "airline": "AI",
-        "travel_date": "2026-09-15",
-        "cabin_class": "economy",
-        "base_fare": 4500,
-        "tax_amount": 810,
-        "total_fare": 5310,
-        "currency": "INR"
-    }
-]
 
-
-@router.get("/", response_model=list[Fare],
-         summary="Get flight fares",
-         description="Retrieve flight fares using route, airline, date and cabin filters."
-          )
-
+@router.get(
+    "/",
+    response_model=list[Fare],
+    summary="Get flight fares",
+    description="Retrieve flight fare observations from the database."
+)
 def get_fares(
     origin: str | None = None,
     destination: str | None = None,
     airline: str | None = None,
     travel_date: date | None = None,
-    cabin_class: str | None = None
+    skip: int = Query(
+        default=0,
+        ge=0,
+        description="Number of records to skip"
+    ),
+    limit: int = Query(
+        default=100,
+        ge=1,
+        le=500,
+        description="Maximum number of records to return"
+    ),
+    db: Session = Depends(get_db),
 ):
 
-    result = fares_data
+    try:
+        logger.info(
+            "Fetching fares: origin=%s, destination=%s, airline=%s, "
+            "travel_date=%s, skip=%s, limit=%s",
+            origin,
+            destination,
+            airline,
+            travel_date,
+            skip,
+            limit,
+        )
 
-    if origin:
-        result = [
-            fare for fare in result
-            if fare["origin"] == origin
-        ]
+        repository = FareRepository(db)
 
-    if destination:
-        result = [
-            fare for fare in result
-            if fare["destination"] == destination
-        ]
+        return repository.get_latest(
+            origin=origin,
+            destination=destination,
+            airline=airline,
+            travel_date=travel_date,
+            skip=skip,
+            limit=limit,
+        )
 
-    if airline:
-        result = [
-            fare for fare in result
-            if fare["airline"] == airline
-        ]
+    except Exception:
+        logger.exception("Failed to fetch fares")
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to retrieve fare data."
+        )
 
-    if travel_date:
-        result = [
-            fare for fare in result
-            if fare["travel_date"] == travel_date
-        ]
 
-    if cabin_class:
-        result = [
-            fare for fare in result
-            if fare["cabin_class"] == cabin_class
-        ]
+@router.get(
+    "/{fare_id}",
+    response_model=Fare,
+    responses={404: {"description": "Fare not found"}}
+)
+def get_fare(
+    fare_id: int,
+    db: Session = Depends(get_db),
+):
 
-    return result
+    try:
+        logger.info("Fetching fare with id=%s", fare_id)
 
-@router.get("/fares/{fare_id}", response_model=Fare,
-            responses={
-            404: {
-            "description": "Fare not found"
-            }
-        }
-    )
-def get_fare(fare_id: str):
+        fare = db.get(FareObservation, fare_id)
 
-    for fare in fares_data:
-        if fare["id"] == fare_id:
-            return fare
+        if fare is None:
+            logger.warning("Fare not found: id=%s", fare_id)
+            raise HTTPException(
+                status_code=404,
+                detail="Fare not found"
+            )
 
-    raise HTTPException(
-        status_code=404,
-        detail="Airport not found"
-    )
+        return fare
+
+    except HTTPException:
+        raise
+
+    except Exception:
+        logger.exception(
+            "Failed to fetch fare with id=%s",
+            fare_id
+        )
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to retrieve fare data."
+        )

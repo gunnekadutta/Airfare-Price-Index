@@ -15,12 +15,13 @@ def calculate_route_median(
     df: pd.DataFrame,
 ) -> pd.DataFrame:
     """
-    Calculate the median displayed fare for each route and travel date.
+    Calculate the median fare for each route and travel date.
 
     Expected columns:
-        route
+        origin
+        destination
         travel_date
-        fare_displayed
+        fare
 
     Returns:
         DataFrame containing one representative fare per
@@ -28,9 +29,10 @@ def calculate_route_median(
     """
 
     required_columns = [
-        "route",
+        "origin",
+        "destination",
         "travel_date",
-        "fare_displayed",
+        "fare",
     ]
 
     missing_columns = [
@@ -51,8 +53,22 @@ def calculate_route_median(
 
     result = df.copy()
 
-    result["fare_displayed"] = pd.to_numeric(
-        result["fare_displayed"],
+    # ---------------------------------------------------------
+    # Build route from origin and destination
+    # ---------------------------------------------------------
+
+    result["route"] = (
+        result["origin"].astype(str).str.upper().str.strip()
+        + "-"
+        + result["destination"].astype(str).str.upper().str.strip()
+    )
+
+    # ---------------------------------------------------------
+    # Convert fare and travel date to usable formats
+    # ---------------------------------------------------------
+
+    result["fare"] = pd.to_numeric(
+        result["fare"],
         errors="coerce",
     )
 
@@ -61,29 +77,39 @@ def calculate_route_median(
         errors="coerce",
     )
 
+    # ---------------------------------------------------------
+    # Remove invalid observations
+    # ---------------------------------------------------------
+
     result = result.dropna(
         subset=[
             "route",
             "travel_date",
-            "fare_displayed",
+            "fare",
         ]
     )
+
+    result = result[result["fare"] > 0]
 
     if result.empty:
         raise ValueError(
             "No valid fare observations remain after cleaning."
         )
 
+    # ---------------------------------------------------------
+    # Calculate median fare for each route and travel date
+    # ---------------------------------------------------------
+
     aggregated = (
         result
         .groupby(
             ["route", "travel_date"],
-            as_index=False
-        )["fare_displayed"]
+            as_index=False,
+        )["fare"]
         .median()
         .rename(
             columns={
-                "fare_displayed": "representative_fare"
+                "fare": "representative_fare"
             }
         )
     )

@@ -11,13 +11,11 @@ from api.routes import (
     index,
 )
 
-
 app = FastAPI(
     title="Airfare Price Index API",
     description="Backend API for the Airfare Price Index project",
     version="1.0.0",
 )
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -29,7 +27,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 app.include_router(
     health.router,
@@ -55,6 +52,14 @@ app.include_router(
     tags=["Routes"],
 )
 
+# Index MUST be registered before fares
+# because fares contains /{fare_id}.
+app.include_router(
+    index.router,
+    prefix="/api/v1",
+    tags=["Index"],
+)
+
 app.include_router(
     fares.router,
     prefix="/api/v1",
@@ -65,12 +70,6 @@ app.include_router(
     forecast.router,
     prefix="/api/v1",
     tags=["Forecast"],
-)
-
-app.include_router(
-    index.router,
-    prefix="/api/v1",
-    tags=["Index"],
 )
 
 
