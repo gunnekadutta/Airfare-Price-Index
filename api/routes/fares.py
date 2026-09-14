@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.get(
-    "/",
+    "",
     response_model=list[Fare],
     summary="Get flight fares",
     description="Retrieve flight fare observations from the database."

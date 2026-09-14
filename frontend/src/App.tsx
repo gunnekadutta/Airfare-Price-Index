@@ -260,6 +260,9 @@ export function App() {
   const [indexData, setIndexData] = useState<any>(null);
   const [indexLoading, setIndexLoading] = useState(true);
   const [indexError, setIndexError] = useState<string | null>(null);
+  const [fareData, setFareData] = useState<any[]>([]);
+  const [fareLoading, setFareLoading] = useState(true);
+  const [fareError, setFareError] = useState<string | null>(null);
   const [overviewPeriod, setOverviewPeriod] = useState<'daily' | 'weekly' | 'monthly'>('daily');
   const [leadTimeHorizon, setLeadTimeHorizon] = useState<1 | 7 | 15 | 30 | 45>(1);
 
@@ -294,10 +297,77 @@ export function App() {
 
     fetchIndex();
   }, []);
+  useEffect(() => {
+  const fetchFares = async () => {
+    try {
+      setFareLoading(true);
+      setFareError(null);
+
+      const response = await fetch(`${API_BASE_URL}/api/v1/fares?limit=500`);
+
+      if (!response.ok) {
+        throw new Error(`API request failed: ${response.status}`);
+      }
+
+      const data = await response.json();
+      setFareData(data);
+    } catch (error) {
+      setFareError(
+        error instanceof Error ? error.message : 'Unable to connect to backend'
+      );
+    } finally {
+      setFareLoading(false);
+    }
+  };
+
+  fetchFares();
+}, []);
   const isLanding = activeTab === 'welcome';
   const selectedRouteIndex = MVP_ROUTES.indexOf(selectedRoute) + 1;
-  const selectedRouteFare = ROUTE_MEDIAN_FARES[selectedRoute] ?? null;
-  const selectedRouteObservations = selectedRoute === 'DEL-BLR' ? DEL_BLR_OBSERVATIONS : [];
+ const selectedRouteFare = (() => {
+  const fares = fareData
+    .filter(
+      (fare) =>
+        `${fare.origin}-${fare.destination}` === selectedRoute
+    )
+    .map((fare) => Number(fare.fare))
+    .filter((fare) => Number.isFinite(fare));
+
+  if (fares.length === 0) return null;
+
+  fares.sort((a, b) => a - b);
+
+  const middle = Math.floor(fares.length / 2);
+
+  return fares.length % 2 === 0
+    ? (fares[middle - 1] + fares[middle]) / 2
+    : fares[middle];
+})();
+
+
+const selectedRouteObservations = fareData
+  .filter(
+    (fare) =>
+      `${fare.origin}-${fare.destination}` === selectedRoute
+  )
+  .map((fare) => ({
+    observation_id: `OBS-${fare.id}`,
+    origin: fare.origin,
+    destination: fare.destination,
+    collected_at: fare.created_at,
+    travel_date: fare.travel_date,
+    airline: fare.airline,
+    flight_number: null,
+    departure_time: null,
+    fare_displayed: fare.fare,
+    currency: 'INR',
+    fare_type: 'Not available',
+    source: null,
+    is_round_trip: false,
+    taxes: null,
+    total_fare: null,
+    booking_window: fare.booking_window,
+  }));
   const [selectedOrigin, selectedDestination] = selectedRoute.split('-');
 
   return (
@@ -958,8 +1028,34 @@ export function App() {
                       )) : (
                         <tr>
                           <td colSpan={11} className="px-6 py-12 text-center">
-                            <div className="text-sm font-semibold text-slate-700">Observation rows are not available for {selectedRoute} in the current demo set.</div>
-                            <div className="text-xs text-slate-400 mt-1">The route remains part of the 25-route MVP basket and is ready for observation-level data.</div>
+                            {fareLoading ? (
+                              <>
+                                <div className="text-sm font-semibold text-slate-700">
+                                  Loading fare observations...
+                                </div>
+                                <div className="text-xs text-slate-400 mt-1">
+                                  Fetching data from the backend.
+                                </div>
+                              </>
+                            ) : fareError ? (
+                              <>
+                                <div className="text-sm font-semibold text-red-600">
+                                  Unable to load fare observations.
+                                </div>
+                                <div className="text-xs text-slate-400 mt-1">
+                                  {fareError}
+                                </div>
+                              </>
+                            ) : (
+                              <>
+                                <div className="text-sm font-semibold text-slate-700">
+                                  No observations available for {selectedRoute}.
+                                </div>
+                                <div className="text-xs text-slate-400 mt-1">
+                                  This route is part of the 25-route MVP basket but currently has no observation data.
+                                </div>
+                              </>
+                            )}
                           </td>
                         </tr>
                       )}
