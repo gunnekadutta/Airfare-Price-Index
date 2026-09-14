@@ -130,6 +130,99 @@ const DEL_BLR_OBSERVATIONS: RouteObservation[] = [
   },
 ];
 
+const DEL_BOM_OBSERVATIONS: RouteObservation[] = [
+  {
+    observation_id: 'OBS-10926',
+    collected_at: '15 Nov 08:30',
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BOM',
+    route: 'DEL-BOM',
+    airline: 'IndiGo',
+    flight_number: '6E-2045',
+    departure_time: '06:30',
+    fare_displayed: 4200,
+    currency: 'INR',
+    fare_type: null,
+    source: 'GDS Aggregator',
+    is_round_trip: false,
+    taxes: 550,
+    total_fare: 4750,
+  },
+  {
+    observation_id: 'OBS-10927',
+    collected_at: '15 Nov 08:34',
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BOM',
+    route: 'DEL-BOM',
+    airline: 'Air India',
+    flight_number: 'AI-865',
+    departure_time: '08:00',
+    fare_displayed: 4800,
+    currency: 'INR',
+    fare_type: null,
+    source: 'Direct API',
+    is_round_trip: false,
+    taxes: 620,
+    total_fare: 5420,
+  },
+  {
+    observation_id: 'OBS-10928',
+    collected_at: '15 Nov 08:38',
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BOM',
+    route: 'DEL-BOM',
+    airline: 'IndiGo',
+    flight_number: '6E-2176',
+    departure_time: '11:15',
+    fare_displayed: 5100,
+    currency: 'INR',
+    fare_type: null,
+    source: 'GDS Aggregator',
+    is_round_trip: false,
+    taxes: 660,
+    total_fare: 5760,
+  },
+  {
+    observation_id: 'OBS-10929',
+    collected_at: null,
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BOM',
+    route: 'DEL-BOM',
+    airline: 'Vistara',
+    flight_number: null,
+    departure_time: null,
+    fare_displayed: 5600,
+    currency: 'INR',
+    fare_type: null,
+    source: null,
+    is_round_trip: null,
+    taxes: null,
+    total_fare: null,
+  },
+  {
+    observation_id: 'OBS-10930',
+    collected_at: null,
+    travel_date: null,
+    origin: 'DEL',
+    destination: 'BOM',
+    route: 'DEL-BOM',
+    airline: 'Air India',
+    flight_number: null,
+    departure_time: null,
+    fare_displayed: 5900,
+    currency: 'INR',
+    fare_type: null,
+    source: null,
+    is_round_trip: null,
+    taxes: null,
+    total_fare: null,
+  },
+];
+
 function formatFare(value: number | null, currency = 'INR') {
   if (value === null) return 'Not available';
   if (currency === 'INR') return `₹${value.toLocaleString('en-IN')}`;
@@ -172,7 +265,12 @@ export function App() {
   const isLanding = activeTab === 'welcome';
   const selectedRouteIndex = MVP_ROUTES.indexOf(selectedRoute) + 1;
   const selectedRouteFare = ROUTE_MEDIAN_FARES[selectedRoute] ?? null;
-  const selectedRouteObservations = selectedRoute === 'DEL-BLR' ? DEL_BLR_OBSERVATIONS : [];
+  const selectedRouteObservations =
+  selectedRoute === 'DEL-BLR'
+    ? DEL_BLR_OBSERVATIONS
+    : selectedRoute === 'DEL-BOM'
+      ? DEL_BOM_OBSERVATIONS
+      : [];
   const [selectedOrigin, selectedDestination] = selectedRoute.split('-');
 
   return (
